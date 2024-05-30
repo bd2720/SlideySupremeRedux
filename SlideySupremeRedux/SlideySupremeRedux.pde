@@ -16,8 +16,8 @@ class Coord {
   }
 }
 
-int m = 7; // x-length
-int n = 5; // y-length
+int m = 5; // x-length
+int n = 7; // y-length
 
 /*
   board is stored n x m.
@@ -56,7 +56,7 @@ void shuffleBoard(){
 
 void drawBoard(){
   // draw tiles
-  noStroke();
+  stroke(#cfcfcf);
   rectMode(CENTER);
   textAlign(CENTER, CENTER);
   textSize(numSize);
@@ -67,7 +67,7 @@ void drawBoard(){
     jBoard = 0;
     for(j = boardStart.x + tileSize/2; j < boardEnd.x; j += tileSize){
        if(board[iBoard][jBoard] != 0){ // regular tile
-         fill(#afafaf); // tile color
+         fill(#9f9f9f); // tile color
          square(j, i, tileSize);
          fill(#ffffff); // text color
          text(board[iBoard][jBoard], j, i);
@@ -79,25 +79,51 @@ void drawBoard(){
     }
     iBoard++;
   }
-  // draw lines
-  stroke(#000000);
-  for(j = boardStart.x; j <= boardEnd.x; j += tileSize){
-    line(j, boardStart.y, j, boardEnd.y);
+}
+
+void moveTile(){
+  if(!mousePressed) return;
+  int j = (mouseX - boardStart.x)/tileSize;
+  if(j < 0 || j >= m) return;
+  int i = (mouseY - boardStart.y)/tileSize;
+  if(i < 0 || i >= n) return;
+  int temp;
+  // if empty tile is UP
+  if(i-1 >= 0 && board[i-1][j] == 0){
+    board[i-1][j] = board[i][j];
+    board[i][j] = 0;
+    return;
   }
-  for(i = boardStart.y; i <= boardEnd.y; i += tileSize){
-    line(boardStart.x, i, boardEnd.x, i);
+  // if empty tile is DOWN
+  if(i+1 < n && board[i+1][j] == 0){
+    board[i+1][j] = board[i][j];
+    board[i][j] = 0;
+    return;
   }
-  
+  // if empty tile is LEFT
+  if(j-1 >= 0 && board[i][j-1] == 0){
+    board[i][j-1] = board[i][j];
+    board[i][j] = 0;
+    return;
+  }
+  // if empty tile is RIGHT
+  if(j+1 < m && board[i][j+1] == 0){
+    board[i][j+1] = board[i][j];
+    board[i][j] = 0;
+    return;
+  }
 }
 
 void setup(){
   size(800, 600);
-  background(#3f3f3f);
   initBoard();
   shuffleBoard();
+  background(#1f1f1f);
+  drawBoard();
 }
 
 void draw(){
-  //checkInput();
+  moveTile();
+  background(#1f1f1f);
   drawBoard();
 }
