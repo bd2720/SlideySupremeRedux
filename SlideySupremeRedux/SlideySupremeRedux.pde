@@ -31,25 +31,48 @@ Coord boardEnd; // coordinates of board's end (bottom right)
 int tileSize; // dimension of square tiles
 int numSize; // font size of numbers on tiles
 
+boolean solved; // true when puzzle is solved. halts gameplay
 
 void initBoard(){
+  solved = false;
   board = new int[n][m];
   // ensures there is some room between the board and the screen.
   boardStart = new Coord(height/30, width/30);
   tileSize = 72; // hard-coded, change later?
-  numSize = 50; // hard-coded, change later?
+  numSize = 65; // hard-coded, change later?
   boardEnd = new Coord(boardStart.x + m*tileSize, boardStart.y + n*tileSize);
 }
 
-// TODO: make countInversions()
+int countInversions(IntList nums){
+  int inversions = 0;
+  for(int i = 0; i < nums.size(); i++){
+    if(nums.get(i) == mn) continue;
+    for(int j = i+1; j < nums.size(); j++){
+      if(nums.get(j) == mn) continue;
+      if(nums.get(i) > nums.get(j)) inversions++;
+    }
+  }
+  return inversions;
+}
+
+boolean isSolved(){
+  int num = 0;
+  for(int i = 0; i < n; i++){
+    for(int j = 0; j < m; j++){
+      if(board[i][j] != num+1) return false;
+      num = board[i][j];
+    }
+  }
+  return true;
+}
 
 void shuffleBoard(){
   int i, j;
   IntList nums = new IntList();
-  int inversions; // solvable shuffles have an even number of inversions
+  int inversions;
   int iEmpty = 0;
   int jEmpty = 0; 
-  boolean valid;
+  boolean valid = true;
   
   // populate nums
   for(i = 1; i <= mn; i++){
@@ -59,25 +82,24 @@ void shuffleBoard(){
   do {
     nums.shuffle();
     // count inversions
-    inversions = 0;
-    for(i = 1; i < mn; i++){
+    inversions = countInversions(nums);
+    // locate empty tile
+    for(i = 0; i < mn; i++){
       if(nums.get(i) == mn){
-        iEmpty = i%m;
-        jEmpty = i/n;
-        continue;
+        iEmpty = i/n;
+        jEmpty = i%m;
+        break;
       }
-      if(nums.get(i-1) > nums.get(i)) inversions++;
     }
     
     // determine if shuffle is valid
-    if(m % 2 != n % 2){ // parities of n and m do not match
-      valid = (inversions % 2) != ((m - jEmpty + n - iEmpty) % 2);
-    } else if(n % 2 == 0) { // both n and m are even
-      valid = (inversions % 2) == ((m - jEmpty + n - iEmpty) % 2);
-    } else { // both n and m are odd
-      valid = (inversions % 2 != 0);
+    
+    if(n % 2 == 0 && m % 2 == 0) { // m EVEN, n EVEN
+      valid = (inversions % 2) != ((iEmpty) % 2);
+    } else if(n % 2 != 0 && m % 2 != 0) { // m ODD, n ODD
+      valid = (inversions % 2 == 0);
     }
-  } while(!valid); 
+  } while(!valid);
   
   // copy nums to board
   for(i = 0; i < n; i++){
@@ -156,7 +178,13 @@ void setup(){
 }
 
 void draw(){
-  moveTile();
+  solved = isSolved();
+  if(!solved) moveTile();
   background(#1f1f1f);
   drawBoard();
+  if(solved){
+    textSize(60);
+    fill(#cfcfcf);
+    text("You Did It!", 3*width/4, height/4);
+  }
 }
