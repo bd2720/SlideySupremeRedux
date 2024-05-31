@@ -16,12 +16,13 @@ class Coord {
   }
 }
 
-int m = 5; // x-length
-int n = 7; // y-length
+int m = 4; // x-length
+int n = 4; // y-length
+int mn = m*n;
 
 /*
   board is stored n x m.
-  0 represents the empty tile.
+  mn represents the empty tile.
 */
 int board[][];
 // to be initialized by initBoard()
@@ -40,13 +41,45 @@ void initBoard(){
   boardEnd = new Coord(boardStart.x + m*tileSize, boardStart.y + n*tileSize);
 }
 
+// TODO: make countInversions()
+
 void shuffleBoard(){
   int i, j;
   IntList nums = new IntList();
-  for(i = 0; i < m*n; i++){
+  int inversions; // solvable shuffles have an even number of inversions
+  int iEmpty = 0;
+  int jEmpty = 0; 
+  boolean valid;
+  
+  // populate nums
+  for(i = 1; i <= mn; i++){
     nums.append(i);
   }
-  nums.shuffle();
+  // shuffle until valid
+  do {
+    nums.shuffle();
+    // count inversions
+    inversions = 0;
+    for(i = 1; i < mn; i++){
+      if(nums.get(i) == mn){
+        iEmpty = i%m;
+        jEmpty = i/n;
+        continue;
+      }
+      if(nums.get(i-1) > nums.get(i)) inversions++;
+    }
+    
+    // determine if shuffle is valid
+    if(m % 2 != n % 2){ // parities of n and m do not match
+      valid = (inversions % 2) != ((m - jEmpty + n - iEmpty) % 2);
+    } else if(n % 2 == 0) { // both n and m are even
+      valid = (inversions % 2) == ((m - jEmpty + n - iEmpty) % 2);
+    } else { // both n and m are odd
+      valid = (inversions % 2 != 0);
+    }
+  } while(!valid); 
+  
+  // copy nums to board
   for(i = 0; i < n; i++){
     for(j = 0; j < m; j++){
       board[i][j] = nums.get(i*m + j);
@@ -66,7 +99,7 @@ void drawBoard(){
   for(i = boardStart.y + tileSize/2; i < boardEnd.y; i += tileSize){
     jBoard = 0;
     for(j = boardStart.x + tileSize/2; j < boardEnd.x; j += tileSize){
-       if(board[iBoard][jBoard] != 0){ // regular tile
+       if(board[iBoard][jBoard] != mn){ // regular tile
          fill(#9f9f9f); // tile color
          square(j, i, tileSize);
          fill(#ffffff); // text color
@@ -89,27 +122,27 @@ void moveTile(){
   if(i < 0 || i >= n) return;
   int temp;
   // if empty tile is UP
-  if(i-1 >= 0 && board[i-1][j] == 0){
+  if(i-1 >= 0 && board[i-1][j] == mn){
     board[i-1][j] = board[i][j];
-    board[i][j] = 0;
+    board[i][j] = mn;
     return;
   }
   // if empty tile is DOWN
-  if(i+1 < n && board[i+1][j] == 0){
+  if(i+1 < n && board[i+1][j] == mn){
     board[i+1][j] = board[i][j];
-    board[i][j] = 0;
+    board[i][j] = mn;
     return;
   }
   // if empty tile is LEFT
-  if(j-1 >= 0 && board[i][j-1] == 0){
+  if(j-1 >= 0 && board[i][j-1] == mn){
     board[i][j-1] = board[i][j];
-    board[i][j] = 0;
+    board[i][j] = mn;
     return;
   }
   // if empty tile is RIGHT
-  if(j+1 < m && board[i][j+1] == 0){
+  if(j+1 < m && board[i][j+1] == mn){
     board[i][j+1] = board[i][j];
-    board[i][j] = 0;
+    board[i][j] = mn;
     return;
   }
 }
