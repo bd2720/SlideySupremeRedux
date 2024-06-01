@@ -4,6 +4,8 @@
   now I'd like to generalize the game.
 */
 
+import java.lang.*; // System.nanoTime();
+
 class Coord {
   public int x;
   public int y;
@@ -32,15 +34,24 @@ int tileSize; // dimension of square tiles
 int numSize; // font size of numbers on tiles
 
 boolean solved; // true when puzzle is solved. halts gameplay
+int moves; // number of moves taken
+long tStart;
+long tElapsed;
+float time;
+
+enum State { INIT, PLAY, SOLVED }
+
+State state = State.INIT;
 
 void initBoard(){
-  solved = false;
   board = new int[n][m];
   // ensures there is some room between the board and the screen.
   boardStart = new Coord(height/30, width/30);
   tileSize = 72; // hard-coded, change later?
   numSize = 65; // hard-coded, change later?
   boardEnd = new Coord(boardStart.x + m*tileSize, boardStart.y + n*tileSize);
+  
+  moves = 0;
 }
 
 int countInversions(IntList nums){
@@ -136,55 +147,102 @@ void drawBoard(){
   }
 }
 
-void moveTile(){
-  if(!mousePressed) return;
+boolean moveTile(){
+  if(!mousePressed) return false;
   int j = (mouseX - boardStart.x)/tileSize;
-  if(j < 0 || j >= m) return;
+  if(j < 0 || j >= m) return false;
   int i = (mouseY - boardStart.y)/tileSize;
-  if(i < 0 || i >= n) return;
+  if(i < 0 || i >= n) return false;
   int temp;
   // if empty tile is UP
   if(i-1 >= 0 && board[i-1][j] == mn){
     board[i-1][j] = board[i][j];
     board[i][j] = mn;
-    return;
+    moves++;
+    return true;
   }
   // if empty tile is DOWN
   if(i+1 < n && board[i+1][j] == mn){
     board[i+1][j] = board[i][j];
     board[i][j] = mn;
-    return;
+    moves++;
+    return true;
   }
   // if empty tile is LEFT
   if(j-1 >= 0 && board[i][j-1] == mn){
     board[i][j-1] = board[i][j];
     board[i][j] = mn;
-    return;
+    moves++;
+    return true;
   }
   // if empty tile is RIGHT
   if(j+1 < m && board[i][j+1] == mn){
     board[i][j+1] = board[i][j];
     board[i][j] = mn;
-    return;
+    moves++;
+    return true;
   }
+  return false;
+}
+
+// display text for moves and timer
+void displayStatText(){
+  textSize(40);
+  textAlign(RIGHT);
+  fill(#cfcfcf);
+  text("Time: ", 3*width/4, height/8);
+  text("Moves: ", 3*width/4, height/4);
+  textAlign(LEFT);
+  text(time, 3*width/4 - 8, height/8);
+  text(moves, 3*width/4, height/4);
+}
+
+void displayWinText(){
+  textSize(60);
+  textAlign(CENTER);
+  fill(#cfcfcf);
+  text("You Did It!", 3*width/4, 2*height/3);
 }
 
 void setup(){
   size(800, 600);
+  state = State.INIT;
   initBoard();
   shuffleBoard();
   background(#1f1f1f);
   drawBoard();
+  displayStatText(); // timer and moves
 }
 
 void draw(){
-  solved = isSolved();
-  if(!solved) moveTile();
-  background(#1f1f1f);
-  drawBoard();
-  if(solved){
-    textSize(60);
-    fill(#cfcfcf);
-    text("You Did It!", 3*width/4, height/4);
+  switch(state){
+    case INIT: // before the first move
+      if(moveTile()){ // transition to PLAY
+         tStart = System.currentTimeMillis();
+         state = State.PLAY;
+      } else {
+        background(#1f1f1f);
+        drawBoard();
+        displayStatText();
+      }
+    break;
+    case PLAY: // after the first move, before solve
+    tElapsed = System.currentTimeMillis() - tStart;
+    time = tElapsed/1000.0;
+    if(isSolved()){
+      state = State.SOLVED;
+    } else {
+      moveTile();
+      background(#1f1f1f);
+      drawBoard();
+      displayStatText();
+    }
+    break;
+    case SOLVED:
+      background(#1f1f1f);
+      drawBoard();
+      displayStatText();
+      displayWinText();
+    break;
   }
 }
