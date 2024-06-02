@@ -4,8 +4,6 @@
   now I'd like to generalize the game.
 */
 
-import java.lang.*; // System.nanoTime();
-
 class Coord {
   public int x;
   public int y;
@@ -18,8 +16,8 @@ class Coord {
   }
 }
 
-int m = 4; // x-length
-int n = 4; // y-length
+int m = 5; // x-length
+int n = 7; // y-length
 int mn = m*n;
 
 /*
@@ -46,9 +44,9 @@ State state = State.INIT;
 void initBoard(){
   board = new int[n][m];
   // ensures there is some room between the board and the screen.
-  boardStart = new Coord(height/30, width/30);
-  tileSize = 72; // hard-coded, change later?
-  numSize = 65; // hard-coded, change later?
+  boardStart = new Coord(20, 20);
+  tileSize = min(height/n - 10, (width/2)/m); 
+  numSize = 9*tileSize/10;
   boardEnd = new Coord(boardStart.x + m*tileSize, boardStart.y + n*tileSize);
   
   moves = 0;
@@ -57,9 +55,9 @@ void initBoard(){
 int countInversions(IntList nums){
   int inversions = 0;
   for(int i = 0; i < nums.size(); i++){
-    if(nums.get(i) == mn) continue;
+    //if(nums.get(i) == mn) continue;
     for(int j = i+1; j < nums.size(); j++){
-      if(nums.get(j) == mn) continue;
+      //if(nums.get(j) == mn) continue;
       if(nums.get(i) > nums.get(j)) inversions++;
     }
   }
@@ -70,7 +68,7 @@ boolean isSolved(){
   int num = 0;
   for(int i = 0; i < n; i++){
     for(int j = 0; j < m; j++){
-      if(board[i][j] != num+1) return false;
+      if(board[i][j] < num) return false;
       num = board[i][j];
     }
   }
@@ -83,7 +81,7 @@ void shuffleBoard(){
   int inversions;
   int iEmpty = 0;
   int jEmpty = 0; 
-  boolean valid = true;
+  boolean valid = false;
   
   // populate nums
   for(i = 1; i <= mn; i++){
@@ -91,7 +89,15 @@ void shuffleBoard(){
   }
   // shuffle until valid
   do {
-    nums.shuffle();
+    do {
+      nums.shuffle();
+      for(i = 0; i < mn; i++){
+        if(nums.get(i) != i+1){
+          valid = true;
+          break;
+        }
+      }
+    } while(!valid); // shuffle again if sorted
     // count inversions
     inversions = countInversions(nums);
     // locate empty tile
@@ -104,12 +110,7 @@ void shuffleBoard(){
     }
     
     // determine if shuffle is valid
-    
-    if(n % 2 == 0 && m % 2 == 0) { // m EVEN, n EVEN
-      valid = (inversions % 2) != ((iEmpty) % 2);
-    } else if(n % 2 != 0 && m % 2 != 0) { // m ODD, n ODD
-      valid = (inversions % 2 == 0);
-    }
+    valid = (inversions % 2) == ((m - jEmpty + n - iEmpty) % 2);
   } while(!valid);
   
   // copy nums to board
@@ -193,14 +194,28 @@ void displayStatText(){
   text("Time: ", 3*width/4, height/8);
   text("Moves: ", 3*width/4, height/4);
   textAlign(LEFT);
-  text(time, 3*width/4 - 8, height/8);
+  fill(#ffffff);
+  // build time string from tElapsed
+  long msec = tElapsed % 1000;
+  long sec = (tElapsed / 1000) % 60;
+  long min = (tElapsed / 60000) % 60;
+  long hour = tElapsed / 360000;
+  String timeStr;
+  if(min == 0){
+    timeStr = sec + "." + String.format("%03d", msec);
+  } else if(hour == 0) {
+    timeStr = min + ":" + String.format("%02d", sec) + "." + String.format("%03d", msec);
+  } else {
+    timeStr = hour + String.format("%02d", min) + ":" + String.format("%02d", sec) + "." + String.format("%03d", msec);
+  }
+  text(timeStr, 3*width/4, height/8);
   text(moves, 3*width/4, height/4);
 }
 
 void displayWinText(){
   textSize(60);
   textAlign(CENTER);
-  fill(#cfcfcf);
+  fill(#ffffff);
   text("You Did It!", 3*width/4, 2*height/3);
 }
 
