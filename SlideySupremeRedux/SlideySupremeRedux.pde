@@ -1,9 +1,9 @@
 /*
   15-puzzle of arbitrary size (mxn)
-  In 2019 I hard-coded a 3x3 version,
-  now I'd like to generalize the game.
+  Successor to my hard-coded 3x3 version from 2019
 */
 
+// 2D coordinate class
 class Coord {
   public int x;
   public int y;
@@ -16,9 +16,39 @@ class Coord {
   }
 }
 
-int m = 5; // x-length
-int n = 7; // y-length
+// color scheme class
+class Scheme {
+  String name;
+  public color bg;          // background color
+  public color board;       // board color (behind tiles)
+  public color tile;        // tile color
+  public color nums;        // color of numbers on tiles
+  public color text;        // text color
+  Scheme(){
+    name = "DEFAULT";
+    bg = #000000;
+    board = #ffffff;
+    tile = #000000;
+    nums = #ffffff;
+    text = #ffffff;
+  }
+  Scheme(String n, color b, color p, color s, color x, color t){
+   name = n;
+   bg = b;
+   board = p;
+   tile = s;
+   nums = x;
+   text = t;
+  }
+}
+
+//  *** CUSTOMIZABLE OPTIONS ***
+int m = 3; // horizontal board length
+int n = 3; // vertical board length
+String colorSchemeName = "CLOUDY"; // color scheme (look at initSchemes for a list)
+
 int mn = m*n;
+int nm = mn;
 
 /*
   board is stored n x m.
@@ -35,11 +65,35 @@ boolean solved; // true when puzzle is solved. halts gameplay
 int moves; // number of moves taken
 long tStart;
 long tElapsed;
-float time;
 
 enum State { INIT, PLAY, SOLVED }
+State state; // initialized in setup()
 
-State state = State.INIT;
+ArrayList<Scheme> schemes; // a list of all color schemes
+Scheme activeScheme; // a reference to the chosen color scheme
+
+
+// initializes a number of default color schemes
+void initSchemes(){
+  schemes = new ArrayList<Scheme>();
+  schemes.add(new Scheme()); // default scheme, black and white
+  schemes.add(new Scheme("CLASSIC", #000000, #633302, #964b00, #000000, #ffffff)); // 2019 version color
+  schemes.add(new Scheme("CLOUDY", #1f1f1f, #cfcfcf, #9f9f9f, #ffffff, #ffffff)); // nice soft greyscale
+}
+
+/*
+  Sets activeScheme based on schemeName.
+  If a scheme with schemeName is not found, DEFAULT is used.
+*/
+void applyScheme(String schemeName){
+  for(int i = 0; i < schemes.size(); i++){
+    if((schemes.get(i).name).equals(schemeName)){
+       activeScheme = schemes.get(i);
+       return;
+    }
+  }
+  activeScheme = new Scheme(); // apply default
+}
 
 void initBoard(){
   board = new int[n][m];
@@ -123,7 +177,7 @@ void shuffleBoard(){
 
 void drawBoard(){
   // draw tiles
-  stroke(#cfcfcf);
+  stroke(activeScheme.board);
   rectMode(CENTER);
   textAlign(CENTER, CENTER);
   textSize(numSize);
@@ -134,12 +188,12 @@ void drawBoard(){
     jBoard = 0;
     for(j = boardStart.x + tileSize/2; j < boardEnd.x; j += tileSize){
        if(board[iBoard][jBoard] != mn){ // regular tile
-         fill(#9f9f9f); // tile color
+         fill(activeScheme.tile); // tile color
          square(j, i, tileSize);
-         fill(#ffffff); // text color
+         fill(activeScheme.nums); // number color
          text(board[iBoard][jBoard], j, i);
        } else { // empty tile: no number, draw lighter
-         fill(#cfcfcf);
+         fill(activeScheme.board);
          square(j, i, tileSize);
        }
        jBoard++;
@@ -190,41 +244,42 @@ boolean moveTile(){
 void displayStatText(){
   textSize(40);
   textAlign(RIGHT);
-  fill(#cfcfcf);
-  text("Time: ", 3*width/4, height/8);
-  text("Moves: ", 3*width/4, height/4);
+  fill(activeScheme.text);
+  text("Time: ", 3*width/4 - 20, height/8);
+  text("Moves: ", 3*width/4 - 20, height/4);
   textAlign(LEFT);
-  fill(#ffffff);
   // build time string from tElapsed
   long msec = tElapsed % 1000;
   long sec = (tElapsed / 1000) % 60;
   long min = (tElapsed / 60000) % 60;
-  long hour = tElapsed / 360000;
+  long hour = tElapsed / 3600000;
   String timeStr;
-  if(min == 0){
+  if(tElapsed < 60000){
     timeStr = sec + "." + String.format("%03d", msec);
-  } else if(hour == 0) {
+  } else if(tElapsed < 3600000) {
     timeStr = min + ":" + String.format("%02d", sec) + "." + String.format("%03d", msec);
   } else {
-    timeStr = hour + String.format("%02d", min) + ":" + String.format("%02d", sec) + "." + String.format("%03d", msec);
+    timeStr = hour + ":" + String.format("%02d", min) + ":" + String.format("%02d", sec) + "." + String.format("%03d", msec);
   }
-  text(timeStr, 3*width/4, height/8);
-  text(moves, 3*width/4, height/4);
+  text(timeStr, 3*width/4 - 20, height/8);
+  text(moves, 3*width/4 - 20, height/4);
 }
 
 void displayWinText(){
   textSize(60);
   textAlign(CENTER);
-  fill(#ffffff);
-  text("You Did It!", 3*width/4, 2*height/3);
+  fill(activeScheme.text);
+  text("You Did It!", 3*width/4 - 20, 2*height/3);
 }
 
 void setup(){
   size(800, 600);
   state = State.INIT;
+  initSchemes();
+  applyScheme(colorSchemeName);
   initBoard();
   shuffleBoard();
-  background(#1f1f1f);
+  background(activeScheme.bg);
   drawBoard();
   displayStatText(); // timer and moves
 }
@@ -236,25 +291,25 @@ void draw(){
          tStart = System.currentTimeMillis();
          state = State.PLAY;
       } else {
-        background(#1f1f1f);
+        background(activeScheme.bg);
         drawBoard();
         displayStatText();
       }
     break;
     case PLAY: // after the first move, before solve
     tElapsed = System.currentTimeMillis() - tStart;
-    time = tElapsed/1000.0;
+    // tElapsed *= 600; // time multiplier (debug)
     if(isSolved()){
       state = State.SOLVED;
     } else {
       moveTile();
-      background(#1f1f1f);
+      background(activeScheme.bg);
       drawBoard();
       displayStatText();
     }
     break;
     case SOLVED:
-      background(#1f1f1f);
+      background(activeScheme.bg);
       drawBoard();
       displayStatText();
       displayWinText();
