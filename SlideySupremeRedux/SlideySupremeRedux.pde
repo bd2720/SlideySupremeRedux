@@ -13,12 +13,14 @@ int m = 4; // horizontal board length
 int n = 4; // vertical board length
 String colorSchemeName = "CLOUDY"; // color scheme (look at initSchemes for a list)
 
-enum State { INIT, PLAY, SOLVED }
+enum State { INIT, PREGAME, PLAY, SOLVED }
 State state; // initialized in setup()
 
 void setup(){
-  size(1280, 720);
+  size(800, 600);
   state = State.INIT;
+  initStats();
+  initButtons();
   initSchemes();
   applyScheme(colorSchemeName);
   initBoard();
@@ -26,11 +28,12 @@ void setup(){
   background(activeScheme.bg);
   drawBoard();
   displayStatText(); // timer and moves
+  state = State.PREGAME;
 }
 
 void draw(){
   switch(state){
-    case INIT: // before the first move
+    case PREGAME: // before the first move
       if(moveTile()){ // transition to PLAY
          tStart = System.currentTimeMillis();
          state = State.PLAY;
@@ -39,11 +42,12 @@ void draw(){
         drawBoard();
         displayStatText();
       }
-    break;
+      break;
     case PLAY: // after the first move, before solve
     tElapsed = System.currentTimeMillis() - tStart;
     // tElapsed *= 600; // time multiplier (debug)
     if(isSolved()){
+      updateStats();
       state = State.SOLVED;
     } else {
       moveTile();
@@ -51,12 +55,21 @@ void draw(){
       drawBoard();
       displayStatText();
     }
-    break;
-    case SOLVED:
+      break;
+    case SOLVED: // after puzzle is solved
+      if(pollButton(0)){
+        shuffleBoard();
+        tElapsed = 0;
+        moves = 0;
+        state = State.PREGAME;
+      }
       background(activeScheme.bg);
+      drawButton(0);
       drawBoard();
       displayStatText();
       displayWinText();
-    break;
+      break;
+    default:
+      break;
   }
 }

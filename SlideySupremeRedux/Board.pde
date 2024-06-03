@@ -16,9 +16,11 @@ class Coord {
   }
 }
 
-
+// useful "constants"
 int mn = m*n;
 int nm = mn;
+int mPn = m+n;
+int nPm = mPn;
 
 /*
   board is stored n x m.
@@ -34,13 +36,18 @@ int tileSize; // dimension of square tiles
 int numSize; // font size of numbers on tiles
 
 int moves; // number of moves taken
-int inversions; // number of (a, b) where a appears before b and a > b
+//int inversions; // number of (a, b) where a appears before b and a > b
+
+int iEmpty; // vertical position of the empty tile
+int jEmpty; // horizontal position of the empty tile
 
 void initBoard(){
   board = new int[n][m];
   // ensures there is some room between the board and the screen.
-  boardStart = new Coord(20, 20);
-  tileSize = min(height/n - 10, (width/2)/m); 
+  int wSize = (9*width/10)/2/m;
+  int hSize = (9*height/10)/n ;
+  tileSize = min(wSize, hSize);  //<>//
+  boardStart = new Coord((9*width/10)/30, (9*height/10)/30);
   numSize = 9*tileSize/10;
   boardEnd = new Coord(boardStart.x + m*tileSize, boardStart.y + n*tileSize);
   
@@ -77,8 +84,8 @@ void shuffleBoard(){
   int i, j;
   IntList nums = new IntList();
   int inversions;
-  int iEmpty = 0;
-  int jEmpty = 0; 
+  iEmpty = 0;
+  jEmpty = 0; 
   boolean valid = false;
   
   // populate nums
@@ -87,6 +94,7 @@ void shuffleBoard(){
   }
   // shuffle until valid
   do {
+    // ensure the shuffle is not sorted
     do {
       nums.shuffle();
       for(i = 0; i < mn; i++){
@@ -96,6 +104,7 @@ void shuffleBoard(){
         }
       }
     } while(!valid); // shuffle again if sorted
+    
     // count inversions
     inversions = countInversions(nums);
     // locate empty tile
@@ -108,7 +117,7 @@ void shuffleBoard(){
     }
     
     // determine if shuffle is valid
-    valid = (inversions % 2) == ((m - jEmpty + n - iEmpty) % 2);
+    valid = ((inversions + iEmpty + jEmpty + mPn) & 1) == 0;
     //valid = (inversions % 2 == 0);
   } while(!valid);
   
@@ -154,7 +163,7 @@ boolean moveTile(){
   if(j < 0 || j >= m) return false;
   int i = (mouseY - boardStart.y)/tileSize;
   if(i < 0 || i >= n) return false;
-  int temp;
+  
   // if empty tile is UP
   if(i-1 >= 0 && board[i-1][j] == mn){
     board[i-1][j] = board[i][j];
