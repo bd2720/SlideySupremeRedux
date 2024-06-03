@@ -26,11 +26,15 @@ int nm = mn;
 */
 
 int board[][];
+//IntList boardNums; // same as board, but a 1D list
 // to be initialized by initBoard()
 Coord boardStart; // coordinates of board's start (top left)
 Coord boardEnd; // coordinates of board's end (bottom right)
 int tileSize; // dimension of square tiles
 int numSize; // font size of numbers on tiles
+
+int moves; // number of moves taken
+int inversions; // number of (a, b) where a appears before b and a > b
 
 void initBoard(){
   board = new int[n][m];
@@ -41,6 +45,8 @@ void initBoard(){
   boardEnd = new Coord(boardStart.x + m*tileSize, boardStart.y + n*tileSize);
   
   moves = 0;
+  
+  //boardNums = new IntList();
 }
 
 int countInversions(IntList nums){
@@ -55,6 +61,7 @@ int countInversions(IntList nums){
   return inversions;
 }
 
+// uses board[n][m]
 boolean isSolved(){
   int num = 0;
   for(int i = 0; i < n; i++){
@@ -94,7 +101,7 @@ void shuffleBoard(){
     // locate empty tile
     for(i = 0; i < mn; i++){
       if(nums.get(i) == mn){
-        iEmpty = i/n;
+        iEmpty = i/m;
         jEmpty = i%m;
         break;
       }
@@ -102,6 +109,7 @@ void shuffleBoard(){
     
     // determine if shuffle is valid
     valid = (inversions % 2) == ((m - jEmpty + n - iEmpty) % 2);
+    //valid = (inversions % 2 == 0);
   } while(!valid);
   
   // copy nums to board
@@ -110,6 +118,7 @@ void shuffleBoard(){
       board[i][j] = nums.get(i*m + j);
     }
   }
+  //boardNums = nums.copy();
 }
 
 void drawBoard(){
@@ -151,6 +160,9 @@ boolean moveTile(){
     board[i-1][j] = board[i][j];
     board[i][j] = mn;
     moves++;
+    
+    //boardNums.set(i*m + j, mn);
+    //boardNums.set((i-1)*m + j, board[i-1][j]);
     return true;
   }
   // if empty tile is DOWN
@@ -158,6 +170,9 @@ boolean moveTile(){
     board[i+1][j] = board[i][j];
     board[i][j] = mn;
     moves++;
+    
+    //boardNums.set(i*m + j, mn);
+    //boardNums.set((i+1)*m + j, board[i+1][j]);
     return true;
   }
   // if empty tile is LEFT
@@ -165,6 +180,9 @@ boolean moveTile(){
     board[i][j-1] = board[i][j];
     board[i][j] = mn;
     moves++;
+    
+    //boardNums.set(i*m + j, mn);
+    //boardNums.set(i*m + j-1, board[i][j-1]);
     return true;
   }
   // if empty tile is RIGHT
@@ -172,6 +190,9 @@ boolean moveTile(){
     board[i][j+1] = board[i][j];
     board[i][j] = mn;
     moves++;
+    
+    //boardNums.set(i*m + j, mn);
+    //boardNums.set(i*m + j+1, board[i][j+1]);
     return true;
   }
   return false;

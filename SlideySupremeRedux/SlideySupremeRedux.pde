@@ -17,7 +17,7 @@ enum State { INIT, PLAY, SOLVED }
 State state; // initialized in setup()
 
 void setup(){
-  size(800, 600);
+  size(1280, 720);
   state = State.INIT;
   initSchemes();
   applyScheme(colorSchemeName);

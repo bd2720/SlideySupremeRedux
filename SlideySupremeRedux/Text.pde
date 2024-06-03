@@ -3,7 +3,6 @@
   Also displays winning text.
 */
 
-int moves; // number of moves taken
 long tStart;
 long tElapsed;
 
@@ -14,6 +13,7 @@ void displayStatText(){
   fill(activeScheme.text);
   text("Time: ", 3*width/4 - 20, height/8);
   text("Moves: ", 3*width/4 - 20, height/4);
+  //text("Inversions: ", 3*width/4 - 20, 3*height/8);
   textAlign(LEFT);
   // build time string from tElapsed
   long msec = tElapsed % 1000;
@@ -30,6 +30,8 @@ void displayStatText(){
   }
   text(timeStr, 3*width/4 - 20, height/8);
   text(moves, 3*width/4 - 20, height/4);
+  //int inv = countInversions(boardNums);
+  //text(inv, 3*width/4 - 20, 3*height/8);
 }
 
 void displayWinText(){
