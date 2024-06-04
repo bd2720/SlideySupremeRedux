@@ -34,12 +34,13 @@ ArrayList<Button> buttons;
 // called during setup()
 void initButtons(){
   buttons = new ArrayList<Button>();
-  buttons.add(new Button(0, "Reset", height/8, 3*width/4, 3*height/4, width/4, height/6));
+  buttons.add(new Button(0, "Reset", height/12, 3*width/4, 5*height/6, width/6, height/8));
+  
 }
 
 // returns true when the button with the given id is pressed
 boolean pollButton(int id){
-  if(!mousePressed) return false;
+  if(!mousePressed || pmousePressed) return false;
   Button b = buttons.get(id);
   if(abs(mouseX - b.bX)*2 > b.bWidth) return false;
   if(abs(mouseY - b.bY)*2 > b.bHeight) return false;

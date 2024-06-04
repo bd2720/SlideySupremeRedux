@@ -26,7 +26,7 @@ void displayStatText(){
   text("Time: ", 3*width/4 - 20, height/8);
   text("Moves: ", 3*width/4 - 20, height/4);
   textSize(20);
-  fill(activeScheme.board);
+  fill(activeScheme.subtext);
   text("Best: ", 3*width/4 - 30, 3*height/16 - 5);
   text("Best: ", 3*width/4 - 30, 5*height/16 - 5);
   //text("Inversions: ", 3*width/4 - 20, 3*height/8);
@@ -41,7 +41,7 @@ void displayStatText(){
   //text(inv, 3*width/4 - 20, 3*height/8);
   
   textSize(20);
-  fill(activeScheme.board);
+  fill(activeScheme.subtext);
   if(bestTimeStr.isEmpty()){
     text("---", 3*width/4 - 30, 3*height/16 - 5);
     text("---", 3*width/4 - 30, 5*height/16 - 5);
