@@ -41,8 +41,8 @@ void initButtons(){
 boolean pollButton(int id){
   if(!mousePressed) return false;
   Button b = buttons.get(id);
-  if(abs(mouseX - b.bX) > b.bWidth) return false;
-  if(abs(mouseY - b.bY) > b.bHeight) return false;
+  if(abs(mouseX - b.bX)*2 > b.bWidth) return false;
+  if(abs(mouseY - b.bY)*2 > b.bHeight) return false;
   return true;
 }
 

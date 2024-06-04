@@ -34,40 +34,38 @@ void setup(){
 void draw(){
   switch(state){
     case PREGAME: // before the first move
-      if(moveTile()){ // transition to PLAY
-         tStart = System.currentTimeMillis();
-         state = State.PLAY;
-      } else {
-        background(activeScheme.bg);
-        drawBoard();
-        displayStatText();
-      }
-      break;
-    case PLAY: // after the first move, before solve
-    tElapsed = System.currentTimeMillis() - tStart;
-    // tElapsed *= 600; // time multiplier (debug)
-    if(isSolved()){
-      updateStats();
-      state = State.SOLVED;
-    } else {
-      moveTile();
       background(activeScheme.bg);
       drawBoard();
       displayStatText();
-    }
+      if(moveTile()){ // transition to PLAY
+         tStart = System.currentTimeMillis();
+         state = State.PLAY;
+      }
+      break;
+    case PLAY: // after the first move, before solve
+      tElapsed = System.currentTimeMillis() - tStart;
+      // tElapsed *= 600; // time multiplier (debug)
+      background(activeScheme.bg);
+      drawBoard();
+      displayStatText();
+      moveTile();
+      if(isSolved()){ // transition to SOLVED
+        updateStats();
+        state = State.SOLVED;
+      }
       break;
     case SOLVED: // after puzzle is solved
-      if(pollButton(0)){
-        shuffleBoard();
-        tElapsed = 0;
-        moves = 0;
-        state = State.PREGAME;
-      }
       background(activeScheme.bg);
       drawButton(0);
       drawBoard();
       displayStatText();
       displayWinText();
+      if(pollButton(0)){ // transition to PREGAME
+        shuffleBoard();
+        tElapsed = 0;
+        moves = 0;
+        state = State.PREGAME;
+      }
       break;
     default:
       break;

@@ -17,10 +17,11 @@ class Coord {
 }
 
 // useful "constants"
-int mn = m*n;
-int nm = mn;
-int mPn = m+n;
-int nPm = mPn;
+int mn;
+int nm;
+int mPn;
+int nPm;
+String mxnStr;
 
 /*
   board is stored n x m.
@@ -46,10 +47,17 @@ void initBoard(){
   // ensures there is some room between the board and the screen.
   int wSize = (9*width/10)/2/m;
   int hSize = (9*height/10)/n ;
-  tileSize = min(wSize, hSize);  //<>//
+  tileSize = min(wSize, hSize); 
   boardStart = new Coord((9*width/10)/30, (9*height/10)/30);
-  numSize = 9*tileSize/10;
+  if(mn < 100) numSize = 9*tileSize/10;
+  else numSize = 3*tileSize/5;
   boardEnd = new Coord(boardStart.x + m*tileSize, boardStart.y + n*tileSize);
+  
+  mn = m*n;
+  nm = mn;
+  mPn = m+n;
+  nPm = mPn;
+  mxnStr = m + "x" + n;
   
   moves = 0;
   

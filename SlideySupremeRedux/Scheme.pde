@@ -12,10 +12,10 @@
 class Scheme {
   String name;
   public color bg;          // background color
-  public color board;       // board color (behind tiles)
-  public color tile;        // tile color
-  public color nums;        // color of numbers on tiles
-  public color text;        // text color
+  public color board;       // board color (behind tiles), button outline color
+  public color tile;        // tile color, button fill color
+  public color nums;        // color of numbers on tiles, text on buttons
+  public color text;        // text (on bg) color
   Scheme(){
     name = "DEFAULT";
     bg = #000000;
