@@ -21,22 +21,20 @@ int mn;
 int nm;
 int mPn;
 int nPm;
-String mxnStr;
 
 /*
   board is stored n x m.
   mn represents the empty tile.
 */
 
-int board[][];
 // to be initialized by initBoard()
+int board[][];
 Coord boardStart; // coordinates of board's start (top left)
 Coord boardEnd; // coordinates of board's end (bottom right)
 int tileSize; // dimension of square tiles
 int numSize; // font size of numbers on tiles
 
 int moves; // number of moves taken
-//int inversions; // number of (a, b) where a appears before b and a > b
 
 int iEmpty; // vertical position of the empty tile
 int jEmpty; // horizontal position of the empty tile
@@ -56,7 +54,6 @@ void initBoard(){
   nm = mn;
   mPn = m+n;
   nPm = mPn;
-  mxnStr = m + "x" + n;
   
   moves = 0;
 }
@@ -202,7 +199,7 @@ boolean moveTile(){
   int i = (mouseY - boardStart.y)/tileSize;
   int j = (mouseX - boardStart.x)/tileSize;
   boolean clicked = mousePressed && j >= 0 && j < m && i >= 0 && i < n;
-  boolean keyed = keyPressed && !pkeyPressed && (key == 'w' || key == 'a' || key == 's' || key == 'd');
+  boolean keyed = keyPressed && (!pkeyPressed || pkey != key) && (key == 'w' || key == 'a' || key == 's' || key == 'd');
   if(keyed) return keyMove();
   if(!clicked) return false;
   // if empty tile is UP

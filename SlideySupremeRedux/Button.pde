@@ -37,15 +37,15 @@ ArrayList<Button> buttons;
 // called during setup()
 void initButtons(){
   buttons = new ArrayList<Button>();
-  buttons.add(new Button(0, "Reset", height/12, 3*width/4, 5*height/6, width/6, height/8, 'r'));
-  
+  buttons.add(new Button(0, "Reset", height/12, 5*width/8, 5*height/6, width/6, height/8, 'r'));
+  buttons.add(new Button(1, "Puzzle\nSize", height/18, 7*width/8, 5*height/6, width/6, height/8, 'c'));
 }
 
 // returns true when the button with the given id is pressed
 boolean pollButton(int id){
   boolean keyed, clicked;
   Button b = buttons.get(id);
-  keyed = keyPressed && !pkeyPressed && key == b.bKey;
+  keyed = keyPressed && key == b.bKey && (!pkeyPressed || pkey != b.bKey);
   clicked = mousePressed && !pmousePressed && (abs(mouseX - b.bX)*2 <= b.bWidth) && (abs(mouseY - b.bY)*2 <= b.bHeight);
   return clicked || keyed;
 }
