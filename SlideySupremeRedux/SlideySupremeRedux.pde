@@ -17,6 +17,8 @@ enum State { INIT, PREGAME, PLAY, SOLVED }
 State state; // initialized in setup()
 
 boolean pmousePressed; // mousePressed 1 frame ago
+boolean pkeyPressed; // keyPressed 1 frame ago
+char pkey; // key (last key pressed) 1 frame ago
 
 void setup(){
   size(800, 600);
@@ -32,6 +34,8 @@ void setup(){
   displayStatText(); // timer and moves
   state = State.PREGAME;
   pmousePressed = mousePressed;
+  pkey = key;
+  pkeyPressed = keyPressed;
 }
 
 void draw(){
@@ -84,4 +88,6 @@ void draw(){
       break;
   }
   pmousePressed = mousePressed;
+  pkey = key;
+  pkeyPressed = keyPressed;
 }

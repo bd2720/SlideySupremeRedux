@@ -29,7 +29,6 @@ String mxnStr;
 */
 
 int board[][];
-//IntList boardNums; // same as board, but a 1D list
 // to be initialized by initBoard()
 Coord boardStart; // coordinates of board's start (top left)
 Coord boardEnd; // coordinates of board's end (bottom right)
@@ -60,8 +59,6 @@ void initBoard(){
   mxnStr = m + "x" + n;
   
   moves = 0;
-  
-  //boardNums = new IntList();
 }
 
 int countInversions(IntList nums){
@@ -126,7 +123,6 @@ void shuffleBoard(){
     
     // determine if shuffle is valid
     valid = ((inversions + iEmpty + jEmpty + mPn) & 1) == 0;
-    //valid = (inversions % 2 == 0);
   } while(!valid);
   
   // copy nums to board
@@ -165,51 +161,80 @@ void drawBoard(){
   }
 }
 
+// called by moveTile() if WASD is pressed
+boolean keyMove(){
+  switch(key){
+    case 'w':
+      if(iEmpty+1 >= n) break;
+      board[iEmpty][jEmpty] = board[iEmpty+1][jEmpty];
+      board[iEmpty+1][jEmpty] = mn;
+      iEmpty++;
+      moves++;
+      return true;
+    case 's':
+      if(iEmpty-1 < 0) break;
+      board[iEmpty][jEmpty] = board[iEmpty-1][jEmpty];
+      board[iEmpty-1][jEmpty] = mn;
+      iEmpty--;
+      moves++;
+      return true;
+    case 'a':
+      if(jEmpty+1 >= m) break;
+      board[iEmpty][jEmpty] = board[iEmpty][jEmpty+1];
+      board[iEmpty][jEmpty+1] = mn;
+      jEmpty++;
+      moves++;
+      return true;
+    case 'd':
+      if(jEmpty-1 < 0) break;
+      board[iEmpty][jEmpty] = board[iEmpty][jEmpty-1];
+      board[iEmpty][jEmpty-1] = mn;
+      jEmpty--;
+      moves++;
+      return true;
+    default:
+      break;
+  }
+  return false;
+}
+
 boolean moveTile(){
-  if(!mousePressed) return false;
-  int j = (mouseX - boardStart.x)/tileSize;
-  if(j < 0 || j >= m) return false;
   int i = (mouseY - boardStart.y)/tileSize;
-  if(i < 0 || i >= n) return false;
-  
+  int j = (mouseX - boardStart.x)/tileSize;
+  boolean clicked = mousePressed && j >= 0 && j < m && i >= 0 && i < n;
+  boolean keyed = keyPressed && !pkeyPressed && (key == 'w' || key == 'a' || key == 's' || key == 'd');
+  if(keyed) return keyMove();
+  if(!clicked) return false;
   // if empty tile is UP
   if(i-1 >= 0 && board[i-1][j] == mn){
     board[i-1][j] = board[i][j];
     board[i][j] = mn;
+    iEmpty = i;
     moves++;
-    
-    //boardNums.set(i*m + j, mn);
-    //boardNums.set((i-1)*m + j, board[i-1][j]);
     return true;
   }
   // if empty tile is DOWN
   if(i+1 < n && board[i+1][j] == mn){
     board[i+1][j] = board[i][j];
     board[i][j] = mn;
+    iEmpty = i;
     moves++;
-    
-    //boardNums.set(i*m + j, mn);
-    //boardNums.set((i+1)*m + j, board[i+1][j]);
     return true;
   }
   // if empty tile is LEFT
   if(j-1 >= 0 && board[i][j-1] == mn){
     board[i][j-1] = board[i][j];
     board[i][j] = mn;
+    jEmpty = j;
     moves++;
-    
-    //boardNums.set(i*m + j, mn);
-    //boardNums.set(i*m + j-1, board[i][j-1]);
     return true;
   }
   // if empty tile is RIGHT
   if(j+1 < m && board[i][j+1] == mn){
     board[i][j+1] = board[i][j];
     board[i][j] = mn;
+    jEmpty = j;
     moves++;
-    
-    //boardNums.set(i*m + j, mn);
-    //boardNums.set(i*m + j+1, board[i][j+1]);
     return true;
   }
   return false;

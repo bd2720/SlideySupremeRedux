@@ -11,14 +11,16 @@ class Button {
   int bY; // y-pos of center
   int bWidth; // button width
   int bHeight; // button height
+  char bKey; // keyboard key for button
   Button(){
    id = -1;
    text = "text";
    textSize = 90;
    bX = bY = 0;
    bWidth = bHeight = 100;
+   bKey = 0;
   }
-  Button(int id, String text, int textSize, int bX, int bY, int bWidth, int bHeight){
+  Button(int id, String text, int textSize, int bX, int bY, int bWidth, int bHeight, char bKey){
    this.id = id;
    this.text = text;
    this.textSize = textSize;
@@ -26,6 +28,7 @@ class Button {
    this.bY = bY;
    this.bWidth = bWidth;
    this.bHeight = bHeight;
+   this.bKey = bKey;
   }
 }
 
@@ -34,17 +37,17 @@ ArrayList<Button> buttons;
 // called during setup()
 void initButtons(){
   buttons = new ArrayList<Button>();
-  buttons.add(new Button(0, "Reset", height/12, 3*width/4, 5*height/6, width/6, height/8));
+  buttons.add(new Button(0, "Reset", height/12, 3*width/4, 5*height/6, width/6, height/8, 'r'));
   
 }
 
 // returns true when the button with the given id is pressed
 boolean pollButton(int id){
-  if(!mousePressed || pmousePressed) return false;
+  boolean keyed, clicked;
   Button b = buttons.get(id);
-  if(abs(mouseX - b.bX)*2 > b.bWidth) return false;
-  if(abs(mouseY - b.bY)*2 > b.bHeight) return false;
-  return true;
+  keyed = keyPressed && !pkeyPressed && key == b.bKey;
+  clicked = mousePressed && !pmousePressed && (abs(mouseX - b.bX)*2 <= b.bWidth) && (abs(mouseY - b.bY)*2 <= b.bHeight);
+  return clicked || keyed;
 }
 
 // draws the button with the current id
