@@ -1,7 +1,7 @@
 # SlideySupremeRedux #  
 A 2D 15-puzzle of "arbitrary" width and height.  
-Created with the Processing sketchbook (Java Mode).
-Runs in 1280x720 @ 60fps; designed for 16:9 and 4:3 aspect ratios.
+Created with the Processing sketchbook (Java Mode).  
+Runs in 1280x720 @ 60fps; designed for 16:9 and 4:3 aspect ratios.  
 Minimum puzzle size is 2x2, maximum is 31x31.  
 
 ***KEYBOARD CONTROLS***  
