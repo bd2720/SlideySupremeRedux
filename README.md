@@ -11,6 +11,6 @@ S : Move a tile down to fill the empty square.
 D : Move a tile right to fill the empty square.  
 P : Pause/Unpause the timer.  
 R : Re-shuffle the board, resetting the timer and moves counter.  
-X : Change the size of the puzzle (enter "width x height").
-C : Cycle the game's color scheme.
+X : Change the size of the puzzle (enter "width x height").  
+C : Cycle the game's color scheme.  
 ESCAPE : Exit the game.
