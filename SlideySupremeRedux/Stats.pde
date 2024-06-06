@@ -21,11 +21,11 @@ JSONArray scores; // array of JSON Objects: {"mxn", time, timeStr, moves}
 // display text for moves and timer
 void displayStatText(){
   textAlign(RIGHT);
-  textSize(40);
+  textSize(height/16);
   fill(activeScheme.text);
   text("Time: ", 3*width/4 - 20, height/8);
   text("Moves: ", 3*width/4 - 20, height/4);
-  textSize(20);
+  textSize(height/32);
   fill(activeScheme.subtext);
   text("Best: ", 3*width/4 - 30, 3*height/16 - 5);
   text("Best: ", 3*width/4 - 30, 5*height/16 - 5);
@@ -34,13 +34,13 @@ void displayStatText(){
   // build time string from tElapsed
   String timeStr = formatTimeStr(tElapsed);
   fill(activeScheme.text);
-  textSize(40);
+  textSize(height/16);
   text(timeStr, 3*width/4 - 20, height/8);
   text(moves, 3*width/4 - 20, height/4);
   //int inv = countInversions(boardNums);
   //text(inv, 3*width/4 - 20, 3*height/8);
   
-  textSize(20);
+  textSize(height/32);
   fill(activeScheme.subtext);
   if(bestTimeStr.isEmpty()){
     text("---", 3*width/4 - 30, 3*height/16 - 5);
@@ -73,7 +73,7 @@ void displayWinText(){
   textSize(60);
   textAlign(CENTER, CENTER);
   fill(activeScheme.text);
-  text("You Did It!", 3*width/4, height/2);
+  text("You Did It!", 3*width/4, 7*height/16);
 }
 
 // searches for the current n and m in the (non-null) scores JSONArray

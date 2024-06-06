@@ -3,6 +3,9 @@
   Also contains moveTile() which uses mouse input to move a tile.
 */
 
+int m = 4; // horizontal board length
+int n = 4; // vertical board length
+
 // 2D coordinate class
 class Coord {
   public int x;
@@ -40,20 +43,20 @@ int iEmpty; // vertical position of the empty tile
 int jEmpty; // horizontal position of the empty tile
 
 void initBoard(){
+  mn = m*n;
+  nm = mn;
+  mPn = m+n;
+  nPm = mPn;
+  
   board = new int[n][m];
   // ensures there is some room between the board and the screen.
   int wSize = (9*width/10)/2/m;
   int hSize = (9*height/10)/n ;
   tileSize = min(wSize, hSize); 
   boardStart = new Coord((9*width/10)/30, (9*height/10)/30);
-  if(mn < 100) numSize = 9*tileSize/10;
+  if(mn <= 100) numSize = 9*tileSize/10;
   else numSize = 3*tileSize/5;
   boardEnd = new Coord(boardStart.x + m*tileSize, boardStart.y + n*tileSize);
-  
-  mn = m*n;
-  nm = mn;
-  mPn = m+n;
-  nPm = mPn;
   
   moves = 0;
 }

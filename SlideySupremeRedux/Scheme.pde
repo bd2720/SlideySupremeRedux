@@ -8,6 +8,8 @@
     CLOUDY  : Soft greyscale theme.
 */
 
+String colorSchemeName = "CLASSIC"; // color scheme (look at initSchemes for a list)
+
 // color scheme class
 class Scheme {
   String name;
