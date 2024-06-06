@@ -60,12 +60,23 @@ void puzzleSize(){ // draws, parses menu info for the resize window
 
 // called during the PAUSED state.
 void paused(){
+  // cover board
+  fill(activeScheme.bg);
+  stroke(activeScheme.bg);
+  rectMode(CORNERS);
+  rect(boardStart.x, boardStart.y, boardEnd.x, boardEnd.y);
   // darken screen
   fill(0, 127);
   rectMode(LEFT);
   rect(0, 0, width, height);
+  // "PAUSED"
+  fill(activeScheme.text);
+  textSize(height/12);
+  textAlign(CENTER, CENTER);
+  text("PAUSED", width/4, height/3);
   drawButton(pauseBID);
   if(!pollButton(pauseBID)) return;
+  // back to play
   Button pauseButton = buttons.get(pauseBID);
   pauseButton.text = "Pause";
   tStart = System.currentTimeMillis() - tElapsed;

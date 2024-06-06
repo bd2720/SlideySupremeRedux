@@ -24,6 +24,7 @@ int mn;
 int nm;
 int mPn;
 int nPm;
+String mxnStr;
 
 /*
   board is stored n x m.
@@ -47,6 +48,9 @@ void initBoard(){
   nm = mn;
   mPn = m+n;
   nPm = mPn;
+  mxnStr = m + "x" + n;
+  
+  findButton(resizeBID).subtext = mxnStr;
   
   board = new int[n][m];
   // ensures there is some room between the board and the screen.
