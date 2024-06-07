@@ -30,9 +30,10 @@ void puzzleSize(){ // draws, parses menu info for the resize window
     case RETURN:
       if(inputTemp.indexOf("x") == inputTemp.length()-1) break;
       newN = Integer.parseInt(inputTemp.substring(inputTemp.indexOf("x")+1));
-      if(newN < 2) break;
+      if(newN < minDim || newN > maxDim) break;
       m = newM;
       n = newN;
+      saveDefaults(); // update defaults.json with new m and n
       initStats();
       initBoard();
       shuffleBoard();
@@ -45,9 +46,10 @@ void puzzleSize(){ // draws, parses menu info for the resize window
       inputTemp = inputTemp.substring(0, inputTemp.length()-1);
       break;
     case 'x':
+    case 'X':
       if(inputTemp.length() == 0 || inputTemp.indexOf("x") >= 0) break;
       newM = Integer.parseInt(inputTemp);
-      if(newM < 2) break;
+      if(newM < minDim || newM > maxDim) break;
       inputTemp += "x";
       break;
     default:
@@ -64,7 +66,7 @@ void paused(){
   fill(activeScheme.bg);
   stroke(activeScheme.bg);
   rectMode(CORNERS);
-  rect(boardStart.x, boardStart.y, boardEnd.x, boardEnd.y);
+  rect(0, 0, width/2, height);
   // darken screen
   fill(0, 127);
   rectMode(LEFT);

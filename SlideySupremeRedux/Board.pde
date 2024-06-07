@@ -3,8 +3,10 @@
   Also contains moveTile() which uses mouse input to move a tile.
 */
 
-int m = 4; // horizontal board length
-int n = 4; // vertical board length
+int m; // horizontal board length
+int n; // vertical board length
+int minDim = 2;
+int maxDim = 31;
 
 // 2D coordinate class
 class Coord {

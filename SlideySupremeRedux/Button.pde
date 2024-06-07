@@ -14,6 +14,7 @@ class Button {
   int bWidth; // button width
   int bHeight; // button height
   char bKey; // keyboard key for button
+  char bKey2; // alternate key (opposite case)
   Button(){
    id = -1;
    text = "text";
@@ -22,9 +23,10 @@ class Button {
    bX = bY = 0;
    bWidth = bHeight = 100;
    bKey = 0;
+   bKey2 = 0;
    active = false;
   }
-  Button(int id, String text, int textSize, int bX, int bY, int bWidth, int bHeight, char bKey){
+  Button(int id, String text, int textSize, int bX, int bY, int bWidth, int bHeight, char bKey, char bKey2){
    this.id = id;
    this.text = text;
    this.subtext = "";
@@ -34,9 +36,10 @@ class Button {
    this.bWidth = bWidth;
    this.bHeight = bHeight;
    this.bKey = bKey;
+   this.bKey2 = bKey2;
    active = false;
   }
-  Button(int id, String text, String subtext, int textSize, int bX, int bY, int bWidth, int bHeight, char bKey){
+  Button(int id, String text, String subtext, int textSize, int bX, int bY, int bWidth, int bHeight, char bKey, char bKey2){
    this.id = id;
    this.text = text;
    this.subtext = subtext;
@@ -46,6 +49,7 @@ class Button {
    this.bWidth = bWidth;
    this.bHeight = bHeight;
    this.bKey = bKey;
+   this.bKey2 = bKey2;
    active = false;
   }
 }
@@ -55,17 +59,17 @@ int resetBID = 0;
 int resizeBID = 1;
 int pauseBID = 2;
 int colorBID = 3;
-int infoBID = 4;
+//int infoBID = 4;
 
 
 // called during setup()
 void initButtons(){
   buttons = new ArrayList<Button>();
-  buttons.add(new Button(resetBID, "Reset", height/16, 7*width/8, 5*height/8, width/6, height/8, 'r'));
-  buttons.add(new Button(resizeBID, "Size:", mxnStr, height/19, 5*width/8, 7*height/8, width/6, height/8, 'x'));
-  buttons.add(new Button(pauseBID, "Pause", height/16, 5*width/8, 5*height/8, width/6, height/8, 'p'));
-  buttons.add(new Button(colorBID, "Theme:", colorSchemeName, height/19, 7*width/8, 7*height/8, width/6, height/8, 'c'));
-  //buttons.add(new Button(infoBID, "Info", height/16, 5*width/8, 5*height/8, width/6, height/8, 'p'));
+  buttons.add(new Button(resetBID, "Reset", height/16, 7*width/8, 5*height/8, width/6, height/8, 'r', 'R'));
+  buttons.add(new Button(resizeBID, "Size:", mxnStr, height/19, 5*width/8, 7*height/8, width/6, height/8, 'x', 'X'));
+  buttons.add(new Button(pauseBID, "Pause", height/16, 5*width/8, 5*height/8, width/6, height/8, 'p', 'P'));
+  buttons.add(new Button(colorBID, "Theme:", colorSchemeName, height/19, 7*width/8, 7*height/8, width/6, height/8, 'c', 'C'));
+  //buttons.add(new Button(infoBID, "Info", height/16, 5*width/8, 5*height/8, width/6, height/8, 'p', 'P'));
 }
 
 Button findButton(int id){
@@ -123,18 +127,23 @@ void drawAllButtons(){
 
 // returns true when the button with the given id is pressed
 boolean pollButton(int id){
-  boolean keyed, clicked;
+  boolean keyed, keyed2, clicked;
   Button b = findButton(id);
   if(!b.active) return false;
-  keyed = keyPressed && key == b.bKey && (!pkeyPressed || pkey != b.bKey);
+  keyed = keyPressed && (key == b.bKey && (!pkeyPressed || pkey != b.bKey));
+  keyed2 = keyPressed && (key == b.bKey2 && (!pkeyPressed || pkey != b.bKey2));
   clicked = mousePressed && !pmousePressed && (abs(mouseX - b.bX)*2 <= b.bWidth) && (abs(mouseY - b.bY)*2 <= b.bHeight);
-  return clicked || keyed;
+  return clicked || keyed || keyed2;
 }
 
 /* Polls all ACTIVE buttons in the buttons ArrayList.
    Called at the end of each frame.
    Unfortunately, must be updated manually, matching each button to its routine
    I wish I could use something like a function pointer array but we in java...
+   
+   In the future I'd try defining Button as an interface,
+   where each Button extends the interface with its own "buttonRoutine()" function.
+   
 */
 void pollAllButtons(){
   if(pollButton(resetBID)){ // reset
@@ -159,10 +168,8 @@ void pollAllButtons(){
   Specific button functions are defined below.
   Each button can have a setup function,
   called when the button is first pressed.
-  This function will ultimately change the game's "state" var.
 */
 
-// RESET BUTTON --> State = (none)
 void b_reset(){
   shuffleBoard();
   tElapsed = 0;
@@ -183,7 +190,7 @@ void b_pause(){
   state = State.PAUSED;
 }
 
-void b_color(){
+void b_color(){ // "state" does not change
   int i;
   for(i = 0; i < schemes.size(); i++){
     if(schemes.get(i).name.equals(activeScheme.name)) break;
@@ -194,4 +201,5 @@ void b_color(){
   colorSchemeName = newScheme.name;
   findButton(colorBID).subtext = colorSchemeName;
   activeScheme = newScheme;
+  saveDefaults(); // update defaults.json with new colorSchemeName
 }

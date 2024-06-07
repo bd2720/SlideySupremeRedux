@@ -13,9 +13,8 @@ long bestTime; // lowest number of milliseconds
 String bestTimeStr; // string rep. of bestTime
 int bestMoves; // lowest number of moves
 
-final String dataFolderName = "data";
-final String dataFileName = "scores.json";
-final String dataFilePath = dataFolderName + "/" + dataFileName;
+final String scoresFileName = "scores.json"; // load here
+final String scoresFilePath = "data/" + scoresFileName; // save here
 JSONArray scores; // array of JSON Objects: {"mxn", time, timeStr, moves}
 
 // display text for moves and timer
@@ -93,7 +92,7 @@ void initStats(){
   bestTimeStr = "";
   bestMoves = Integer.MAX_VALUE;
   // attempt to load score data from file
-  scores = loadJSONArray(dataFileName);
+  scores = loadJSONArray(scoresFileName);
   if(scores == null){
     scores = new JSONArray(); // create a new scores array
     return;
@@ -131,7 +130,7 @@ void updateStats(){
     currScore.setString("timeStr", bestTimeStr);
     currScore.setInt("moves", bestMoves);
     scores.append(currScore);
-    saveJSONArray(scores, dataFilePath);
+    saveJSONArray(scores, scoresFilePath);
     return;
   };
   JSONObject currScore = scores.getJSONObject(scoreID);
@@ -140,5 +139,5 @@ void updateStats(){
     currScore.setString("timeStr", bestTimeStr);
   }
   if(beatMoves) currScore.setInt("moves", bestMoves);
-  saveJSONArray(scores, dataFilePath);
+  saveJSONArray(scores, scoresFilePath);
 }
