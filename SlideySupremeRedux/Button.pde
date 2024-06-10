@@ -119,6 +119,7 @@ void drawAllButtons(){
     drawButton(b.id);
     if(!b.active){
       fill(0, 80);
+      stroke(0, 80);
       rectMode(CENTER);
       rect(b.bX, b.bY, b.bWidth, b.bHeight); 
     }

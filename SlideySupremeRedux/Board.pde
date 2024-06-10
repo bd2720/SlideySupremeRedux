@@ -137,7 +137,7 @@ void shuffleBoard(){
       board[i][j] = nums.get(i*m + j);
     }
   }
-  //boardNums = nums.copy();
+  
 }
 
 void drawBoard(){

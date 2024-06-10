@@ -11,6 +11,7 @@ int newN;
 void puzzleSize(){ // draws, parses menu info for the resize window
   // darken screen
   fill(0, 127);
+  stroke(0, 127);
   rectMode(LEFT);
   rect(0, 0, width, height);
   // draw prompt box
@@ -25,11 +26,17 @@ void puzzleSize(){ // draws, parses menu info for the resize window
   textSize(height/9);
   text(inputTemp, width/2, 19*height/36);
   if(!keyPressed || pkeyPressed) return;
+  String tempStr;
+  int xIndex;
   switch(key){
-  case ENTER:
+    case ENTER:
     case RETURN:
-      if(inputTemp.indexOf("x") == inputTemp.length()-1) break;
-      newN = Integer.parseInt(inputTemp.substring(inputTemp.indexOf("x")+1));
+      xIndex = inputTemp.indexOf("x");
+      if(xIndex == -1) break;
+      if(xIndex == inputTemp.length()-1) break;
+      tempStr = inputTemp.substring(xIndex + 1); // the string after "x"
+      if(tempStr.length() > 2) break; // prevent overflow crash
+      newN = Integer.parseInt(tempStr);
       if(newN < minDim || newN > maxDim) break;
       m = newM;
       n = newN;
@@ -48,6 +55,7 @@ void puzzleSize(){ // draws, parses menu info for the resize window
     case 'x':
     case 'X':
       if(inputTemp.length() == 0 || inputTemp.indexOf("x") >= 0) break;
+      if(inputTemp.length() > 2) break; // prevent overflow crash
       newM = Integer.parseInt(inputTemp);
       if(newM < minDim || newM > maxDim) break;
       inputTemp += "x";
