@@ -204,13 +204,60 @@ boolean keyMove(){
   return false;
 }
 
+// called by moveTile() if arrow keys are pressed
+boolean arrowKeyMove(){
+  switch(keyCode){
+    case UP:
+      if(iEmpty+1 >= n) break;
+      board[iEmpty][jEmpty] = board[iEmpty+1][jEmpty];
+      board[iEmpty+1][jEmpty] = mn;
+      iEmpty++;
+      moves++;
+      return true;
+    case DOWN:
+      if(iEmpty-1 < 0) break;
+      board[iEmpty][jEmpty] = board[iEmpty-1][jEmpty];
+      board[iEmpty-1][jEmpty] = mn;
+      iEmpty--;
+      moves++;
+      return true;
+    case LEFT:
+      if(jEmpty+1 >= m) break;
+      board[iEmpty][jEmpty] = board[iEmpty][jEmpty+1];
+      board[iEmpty][jEmpty+1] = mn;
+      jEmpty++;
+      moves++;
+      return true;
+    case RIGHT:
+      if(jEmpty-1 < 0) break;
+      board[iEmpty][jEmpty] = board[iEmpty][jEmpty-1];
+      board[iEmpty][jEmpty-1] = mn;
+      jEmpty--;
+      moves++;
+      return true;
+    default:
+      break;
+  }
+  return false;
+}
+
 boolean moveTile(){
   int i = (mouseY - boardStart.y)/tileSize;
   int j = (mouseX - boardStart.x)/tileSize;
   boolean clicked = mousePressed && j >= 0 && j < m && i >= 0 && i < n;
-  boolean keyed = keyPressed && (!pkeyPressed || pkey != key) && (key == 'w' || key == 'a' || key == 's' || key == 'd');
-  if(keyed) return keyMove();
-  if(!clicked) return false;
+  if(!clicked){ // mouse input takes priority over key input
+    if(!keyPressed) return false;
+    if(key != CODED){ // WASD
+      if((!pkeyPressed || pkey != key) && (key == 'w' || key == 'a' || key == 's' || key == 'd')){
+        return keyMove(); 
+      }
+    } else { // ARROW KEYS
+      if((!pkeyPressed || pkeyCode != keyCode) && (keyCode >= LEFT && keyCode <= DOWN)){
+        return arrowKeyMove();
+      }
+    }
+    return false;
+  }
   // if empty tile is UP
   if(i-1 >= 0 && board[i-1][j] == mn){
     board[i-1][j] = board[i][j];

@@ -21,6 +21,7 @@ String defaultColorSchemeName = "DEFAULT";
 boolean pmousePressed; // mousePressed 1 frame ago
 boolean pkeyPressed; // keyPressed 1 frame ago
 char pkey; // key (last key pressed) 1 frame ago
+int pkeyCode; // keyCode 1 frame ago
 
 void setup(){
   size(1280, 720);
@@ -44,6 +45,7 @@ void setup(){
   pmousePressed = mousePressed;
   pkey = key;
   pkeyPressed = keyPressed;
+  pkeyCode = (int)keyCode;
 }
 
 void draw(){
@@ -87,6 +89,7 @@ void draw(){
   pmousePressed = mousePressed;
   pkey = key;
   pkeyPressed = keyPressed;
+  pkeyCode = (int)keyCode;
 }
 
 void loadDefaults(){ // load recent values of m, n, colorSchemeName
