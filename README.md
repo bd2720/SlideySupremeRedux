@@ -1,4 +1,4 @@
-# SlideySupremeRedux -- V1.0 #  
+# SlideySupremeRedux -- V1.1 #  
 A 2D 15-puzzle of "arbitrary" width and height.  
 Successor to my hard-coded 3x3 version from 2019.  
 Created with the Processing sketchbook (Java Mode).  
@@ -12,10 +12,10 @@ Settings and high scores save across playthroughs.
 Please enjoy, and feel free to suggest changes!  
   
 ***KEYBOARD CONTROLS***  
-W : Move a tile up to fill the empty square.  
-A : Move a tile left to fill the empty square.  
-S : Move a tile down to fill the empty square.  
-D : Move a tile right to fill the empty square.  
+W / UP : Move a tile up to fill the empty square.  
+A / LEFT: Move a tile left to fill the empty square.  
+S / DOWN: Move a tile down to fill the empty square.  
+D / RIGHT: Move a tile right to fill the empty square.  
 P : Pause/Unpause the timer.  
 R : Re-shuffle the board, resetting the timer and moves counter.  
 X : Change the size of the puzzle (enter "*width* x *height*").  
