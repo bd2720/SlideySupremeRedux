@@ -5,10 +5,9 @@
   SlideySupremeRedux.pde: main sketch. calls setup() and draw().
   Uses functions and variables from the other sketches.
   Uses switch() and State to simulate a finite state machine.
-  Contains functions to load/save settings from "defaults.json".
 */
 
-enum State { INIT, PREGAME, PLAY, SOLVED, RESIZE, PAUSED }
+enum State { INIT, PREGAME, PLAY, SOLVED, RESIZE, PAUSED, INFO }
 State state; // initialized in setup()
 
 boolean pmousePressed; // mousePressed 1 frame ago
@@ -20,12 +19,13 @@ void setup(){
   size(800, 600);
   frameRate(60);
   state = State.INIT;
-  loadDefaults();
+  initInfoString();
   initResolutions();
+  initSchemes();
+  loadDefaults();
   applyResolution(resolutionStr);
   initStats();
   initButtons();
-  initSchemes();
   applyScheme(colorSchemeName);
   initBoard();
   shuffleBoard();
@@ -37,6 +37,7 @@ void setup(){
   resize_button.activateButton();
   theme_button.activateButton();
   window_button.activateButton();
+  info_button.activateButton();
   state = State.PREGAME;
   pmousePressed = mousePressed;
   pkey = key;
@@ -79,6 +80,8 @@ void draw(){
     case PAUSED:
       paused();
       break;
+    case INFO:
+      info();
     default:
       break;
   }

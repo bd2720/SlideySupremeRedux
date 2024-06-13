@@ -35,7 +35,7 @@ int jEmpty; // horizontal position of the empty tile
 // called in initBoard and after window is resized
 void sizeBoard(){
   int wSize = (width/2)/m;
-  int hSize = height/n ;
+  int hSize = height/n;
   tileSize = min(wSize, hSize);
   tileSize = 9*tileSize/10;
   boardStart = new Coord(width/4 - m * tileSize / 2, height/2 - n * tileSize / 2);
@@ -45,20 +45,14 @@ void sizeBoard(){
 }
 
 void initBoard(){
-  sizeBoard();
-  
   mn = m*n;
   nm = mn;
   mPn = m+n;
   nPm = mPn;
   mxnStr = m + "x" + n;
-  
+  sizeBoard(); // must go here so that "mn" is updated
   resize_button.subtext = mxnStr;
-  
   board = new int[n][m];
-  // ensures there is some room between the board and the screen.
-  
-  
   moves = 0;
 }
 

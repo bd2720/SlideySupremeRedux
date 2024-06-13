@@ -17,7 +17,7 @@ class Coord {
   }
 }
 
-String resolutionStr = "800x600";
+String resolutionStr;
 Coord activeResolution;
 ArrayList<Coord> resolutions;
 
@@ -37,4 +37,12 @@ void applyResolution(String resolutionStr){
   }
   activeResolution = resolutions.get(0); // apply default
   windowResize(activeResolution.x, activeResolution.y);
+}
+
+// true if resolutionStr in resolutions
+boolean validateResolution(String resStr){
+  for(int i = 0; i < resolutions.size(); i++){
+    if(resStr.equals(resolutions.get(i).x + "x" + resolutions.get(i).y)) return true;
+  }
+  return false;
 }

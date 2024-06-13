@@ -28,7 +28,6 @@ void displayStatText(){
   fill(activeScheme.subtext);
   text("Best: ", 3*width/4 - 30, 3*height/16 - 5);
   text("Best: ", 3*width/4 - 30, 5*height/16 - 5);
-  //text("Inversions: ", 3*width/4 - 20, 3*height/8);
   textAlign(LEFT);
   // build time string from tElapsed
   String timeStr = formatTimeStr(tElapsed);
@@ -36,8 +35,6 @@ void displayStatText(){
   textSize(height/16);
   text(timeStr, 3*width/4 - 20, height/8);
   text(moves, 3*width/4 - 20, height/4);
-  //int inv = countInversions(boardNums);
-  //text(inv, 3*width/4 - 20, 3*height/8);
   
   textSize(height/32);
   fill(activeScheme.subtext);
@@ -80,7 +77,10 @@ int getScoreIndex(int currM, int currN){
   JSONObject currScore;
   for(int i = 0; i < scores.size(); i++){
     currScore = scores.getJSONObject(i);
-    if(currScore.getInt("m") == currM && currScore.getInt("n") == currN) return i;
+    try {
+      if(currScore.getInt("m") == currM && currScore.getInt("n") == currN) return i;
+    } catch(Exception e) { // if m or n missing, skip object
+    }
   }
   return -1;
 }
@@ -101,9 +101,23 @@ void initStats(){
   int scoreID = getScoreIndex(m, n);
   if(scoreID == -1) return; // mxn score record not found
   JSONObject currScore = scores.getJSONObject(scoreID);
+  try {
   bestTime = currScore.getLong("time");
-  bestTimeStr = formatTimeStr(bestTime);
+  if(bestTime <= 0){
+    bestTime = Long.MAX_VALUE;
+    bestTimeStr = "";
+  } else {
+    bestTimeStr = formatTimeStr(bestTime); 
+  }
   bestMoves = currScore.getInt("moves");
+  if(bestMoves <= 0){
+    bestMoves = Integer.MAX_VALUE;
+  }
+  } catch(Exception e){ // if any field is missing, fill all with defaults
+    bestTime = Long.MAX_VALUE;
+    bestTimeStr = "";
+    bestMoves = Integer.MAX_VALUE;
+  }
 }
 
 // called during : PLAY --> SOLVED
@@ -133,9 +147,7 @@ void updateStats(){
     return;
   };
   JSONObject currScore = scores.getJSONObject(scoreID);
-  if(beatTime){
-    currScore.setLong("time", bestTime);
-  }
+  if(beatTime) currScore.setLong("time", bestTime);
   if(beatMoves) currScore.setInt("moves", bestMoves);
   saveJSONArray(scores, scoresFilePath);
 }

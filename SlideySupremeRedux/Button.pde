@@ -94,7 +94,7 @@ class ResizeButton extends Button {
   }
   void buttonSize(){
     textSize = height/19;
-    bX = 5*width/8;
+    bX = 7*width/8;
     bY = 11*height/16;
     bWidth = width/6;
     bHeight = height/8;
@@ -138,7 +138,7 @@ class ThemeButton extends Button {
   void buttonSize(){
     textSize = height/19;
     bX = 7*width/8;
-    bY = 11*height/16;
+    bY = 7*height/8;
     bWidth = width/6;
     bHeight = height/8; 
   }
@@ -167,7 +167,7 @@ class WindowButton extends Button {
   }
   void buttonSize(){
     textSize = height/19;
-    bX = 7*width/8;
+    bX = 5*width/8;
     bY = 7*height/8;
     bWidth = width/6;
     bHeight = height/8;
@@ -185,7 +185,28 @@ class WindowButton extends Button {
     applyResolution(resolutionStr);
     sizeBoard();
     sizeAllButtons();
-    //saveDefaults(); // update defaults.json with new screen resolution
+    saveDefaults(); // update defaults.json with new screen resolution
+  }
+}
+
+class InfoButton extends Button {
+  InfoButton(){ 
+    text = "Info";
+    subtext = "";
+    bKey = 'i';
+    bKey2 = 'I';
+    this.buttonSize();
+  }
+  void buttonSize(){
+    textSize = height/19;
+    bX = 5*width/8;
+    bY = 11*height/16;
+    bWidth = width/6;
+    bHeight = height/8;
+  }
+  void buttonFunction(){
+    pstate = state;
+    state = State.INFO;
   }
 }
 
@@ -196,6 +217,7 @@ ResizeButton resize_button;
 PauseButton pause_button;
 ThemeButton theme_button;
 WindowButton window_button;
+InfoButton info_button;
 
 // called during setup()
 void initButtons(){
@@ -210,6 +232,8 @@ void initButtons(){
   buttons.add(theme_button);
   window_button = new WindowButton();
   buttons.add(window_button);
+  info_button = new InfoButton();
+  buttons.add(info_button);
 }
 
 // draws all buttons; inactive buttons are greyed out
