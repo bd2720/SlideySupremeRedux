@@ -1,9 +1,10 @@
 /*
    Button.pde: Outlines the Button class, and buttons ArrayList.
+   Contains classes for buttons that extend the Button class
    Inits, polls, and draws buttons.
 */
 
-class Button {
+abstract class Button {
   int id;
   boolean active; // true when the button is pressable
   String text;
@@ -15,100 +16,200 @@ class Button {
   int bHeight; // button height
   char bKey; // keyboard key for button
   char bKey2; // alternate key (opposite case)
-  Button(){
-   id = -1;
-   text = "text";
-   subtext = "sub";
-   textSize = 90;
-   bX = bY = 0;
-   bWidth = bHeight = 100;
-   bKey = 0;
-   bKey2 = 0;
-   active = false;
+  abstract void buttonFunction(); // function to be executed once, upon button press
+  abstract void buttonSize(); // needed for efficiently resizing buttons after window resize
+  
+  // sets the button's "active" field. returns the previous value
+  boolean activateButton(){
+    boolean oldActive = active;
+    active = true;
+    return oldActive;
   }
-  Button(int id, String text, int textSize, int bX, int bY, int bWidth, int bHeight, char bKey, char bKey2){
-   this.id = id;
-   this.text = text;
-   this.subtext = "";
-   this.textSize = textSize;
-   this.bX = bX;
-   this.bY = bY;
-   this.bWidth = bWidth;
-   this.bHeight = bHeight;
-   this.bKey = bKey;
-   this.bKey2 = bKey2;
-   active = false;
+  
+  boolean deactivateButton(){
+    boolean oldActive = active;
+    active = false;
+    return oldActive;
   }
-  Button(int id, String text, String subtext, int textSize, int bX, int bY, int bWidth, int bHeight, char bKey, char bKey2){
-   this.id = id;
-   this.text = text;
-   this.subtext = subtext;
-   this.textSize = textSize;
-   this.bX = bX;
-   this.bY = bY;
-   this.bWidth = bWidth;
-   this.bHeight = bHeight;
-   this.bKey = bKey;
-   this.bKey2 = bKey2;
-   active = false;
+  
+  // draws the button
+  void drawButton(){
+    stroke(activeScheme.board);
+    fill(activeScheme.tile);
+    rectMode(CENTER);
+    rect(bX, bY, bWidth, bHeight);
+    fill(activeScheme.nums);
+    textSize(textSize);
+    textAlign(CENTER, CENTER);
+    if(subtext.isEmpty()){
+      text(text, bX, bY);
+    } else {
+      text(text + "\n", bX, bY);
+      text("\n" + subtext, bX, bY);
+    }
+  }
+  
+  // returns true when the button with the given id is pressed
+  boolean pollButton(){
+    boolean keyed, keyed2, clicked;
+    if(!active) return false;
+    keyed = keyPressed && (key == bKey && (!pkeyPressed || pkey != bKey));
+    keyed2 = keyPressed && (key == bKey2 && (!pkeyPressed || pkey != bKey2));
+    clicked = mousePressed && !pmousePressed && (abs(mouseX - bX)*2 <= bWidth) && (abs(mouseY - bY)*2 <= bHeight);
+    return clicked || keyed || keyed2;
+  }
+}
+
+class ResetButton extends Button {
+  ResetButton(){
+    text = "Reset";
+    subtext = "";
+    bKey = 'r';
+    bKey2 = 'R';
+    this.buttonSize();
+  }
+  void buttonSize(){
+    textSize = height/16;
+    bX = 7*width/8;
+    bY = height/2;
+    bWidth = width/6;
+    bHeight = height/8;
+  }
+  void buttonFunction(){
+    shuffleBoard();
+    tElapsed = 0;
+    moves = 0;
+    pause_button.deactivateButton();
+    state = State.PREGAME;
+  }
+}
+
+class ResizeButton extends Button {
+  ResizeButton(){
+    text = "Size:";
+    subtext = mxnStr;
+    bKey = 'x';
+    bKey2 = 'X';
+    this.buttonSize();
+  }
+  void buttonSize(){
+    textSize = height/19;
+    bX = 5*width/8;
+    bY = 11*height/16;
+    bWidth = width/6;
+    bHeight = height/8;
+  }
+  void buttonFunction(){
+    inputTemp = "";
+    pause_button.deactivateButton();
+    state = State.RESIZE;
+  }
+}
+
+class PauseButton extends Button {
+  PauseButton(){ 
+    text = "Pause";
+    subtext = "";
+    bKey = 'p';
+    bKey2 = 'P';
+    this.buttonSize();
+  }
+  void buttonSize(){
+    textSize = height/16;
+    bX = 5*width/8;
+    bY = height/2;
+    bWidth = width/6;
+    bHeight = height/8; 
+  }
+  void buttonFunction(){
+    pause_button.text = "Resume";
+    state = State.PAUSED;
+  }
+}
+
+class ThemeButton extends Button {
+  ThemeButton(){
+    text = "Theme:";
+    subtext = colorSchemeName;
+    bKey = 'c';
+    bKey2 = 'C';
+    this.buttonSize();
+  }
+  void buttonSize(){
+    textSize = height/19;
+    bX = 7*width/8;
+    bY = 11*height/16;
+    bWidth = width/6;
+    bHeight = height/8; 
+  }
+  void buttonFunction(){
+    int i;
+    for(i = 0; i < schemes.size(); i++){
+      if(schemes.get(i).name.equals(activeScheme.name)) break;
+    }
+    Scheme newScheme;
+    if(i == schemes.size() - 1) newScheme = schemes.get(0);
+    else newScheme = schemes.get(i+1);
+    colorSchemeName = newScheme.name;
+    this.subtext = colorSchemeName;
+    activeScheme = newScheme;
+    saveDefaults(); // update defaults.json with new colorSchemeName
+  }
+}
+
+class WindowButton extends Button {
+  WindowButton(){ 
+    text = "Window:";
+    subtext = resolutionStr;
+    bKey = 'm';
+    bKey2 = 'M';
+    this.buttonSize();
+  }
+  void buttonSize(){
+    textSize = height/19;
+    bX = 7*width/8;
+    bY = 7*height/8;
+    bWidth = width/6;
+    bHeight = height/8;
+  }
+  void buttonFunction(){
+    int i;
+    for(i = 0; i < resolutions.size(); i++){
+      if(resolutions.get(i).equals(activeResolution)) break;
+    }
+    Coord newRes;
+    if(i == resolutions.size() - 1) newRes = resolutions.get(0);
+    else newRes = resolutions.get(i+1);
+    resolutionStr = newRes.x + "x" + newRes.y;
+    this.subtext = resolutionStr;
+    applyResolution(resolutionStr);
+    sizeBoard();
+    sizeAllButtons();
+    //saveDefaults(); // update defaults.json with new screen resolution
   }
 }
 
 ArrayList<Button> buttons;
-int resetBID = 0;
-int resizeBID = 1;
-int pauseBID = 2;
-int colorBID = 3;
-//int infoBID = 4;
 
+ResetButton reset_button;
+ResizeButton resize_button;
+PauseButton pause_button;
+ThemeButton theme_button;
+WindowButton window_button;
 
 // called during setup()
 void initButtons(){
   buttons = new ArrayList<Button>();
-  buttons.add(new Button(resetBID, "Reset", height/16, 7*width/8, 5*height/8, width/6, height/8, 'r', 'R'));
-  buttons.add(new Button(resizeBID, "Size:", mxnStr, height/19, 5*width/8, 7*height/8, width/6, height/8, 'x', 'X'));
-  buttons.add(new Button(pauseBID, "Pause", height/16, 5*width/8, 5*height/8, width/6, height/8, 'p', 'P'));
-  buttons.add(new Button(colorBID, "Theme:", colorSchemeName, height/19, 7*width/8, 7*height/8, width/6, height/8, 'c', 'C'));
-  //buttons.add(new Button(infoBID, "Info", height/16, 5*width/8, 5*height/8, width/6, height/8, 'p', 'P'));
-}
-
-Button findButton(int id){
-  for(int i = 0; i < buttons.size(); i++){
-    if(buttons.get(i).id == id) return buttons.get(i);
-  }
-  return new Button();
-}
-
-// sets the button's "active" field. returns the previous value
-boolean activateButton(int id){
-  Button b = findButton(id);
-  boolean oldActive = b.active;
-  b.active = true;
-  return oldActive;
-}
-boolean deactivateButton(int id){
-  Button b = findButton(id);
-  boolean oldActive = b.active;
-  b.active = false;
-  return oldActive;
-}
-
-// draws the button with the current id
-void drawButton(int id){
-  Button b = findButton(id);
-  stroke(activeScheme.board);
-  fill(activeScheme.tile);
-  rectMode(CENTER);
-  rect(b.bX, b.bY, b.bWidth, b.bHeight);
-  fill(activeScheme.nums);
-  textSize(b.textSize);
-  textAlign(CENTER, CENTER);
-  if(b.subtext.isEmpty()){
-    text(b.text, b.bX, b.bY);
-  } else {
-     text(b.text + "\n", b.bX, b.bY);
-     text("\n" + b.subtext, b.bX, b.bY);
-  }
+  reset_button = new ResetButton();
+  buttons.add(reset_button);
+  resize_button = new ResizeButton();
+  buttons.add(resize_button);
+  pause_button = new PauseButton();
+  buttons.add(pause_button);
+  theme_button = new ThemeButton();
+  buttons.add(theme_button);
+  window_button = new WindowButton();
+  buttons.add(window_button);
 }
 
 // draws all buttons; inactive buttons are greyed out
@@ -116,91 +217,29 @@ void drawAllButtons(){
   Button b;
   for(int i = 0; i < buttons.size(); i++){
     b = buttons.get(i);
-    drawButton(b.id);
+    b.drawButton();
     if(!b.active){
       fill(0, 80);
-      stroke(0, 80);
+      noStroke();
       rectMode(CENTER);
       rect(b.bX, b.bY, b.bWidth, b.bHeight); 
     }
   }
 }
 
-// returns true when the button with the given id is pressed
-boolean pollButton(int id){
-  boolean keyed, keyed2, clicked;
-  Button b = findButton(id);
-  if(!b.active) return false;
-  keyed = keyPressed && (key == b.bKey && (!pkeyPressed || pkey != b.bKey));
-  keyed2 = keyPressed && (key == b.bKey2 && (!pkeyPressed || pkey != b.bKey2));
-  clicked = mousePressed && !pmousePressed && (abs(mouseX - b.bX)*2 <= b.bWidth) && (abs(mouseY - b.bY)*2 <= b.bHeight);
-  return clicked || keyed || keyed2;
-}
-
-/* Polls all ACTIVE buttons in the buttons ArrayList.
-   Called at the end of each frame.
-   Unfortunately, must be updated manually, matching each button to its routine
-   I wish I could use something like a function pointer array but we in java...
-   
-   In the future I'd try defining Button as an interface,
-   where each Button extends the interface with its own "buttonRoutine()" function.
-   
-*/
 void pollAllButtons(){
-  if(pollButton(resetBID)){ // reset
-    b_reset();
-    return;
-  }
-  if(pollButton(resizeBID)){ // puzzleSize
-    b_resize();
-    return;
-  }
-  if(pollButton(pauseBID)){ // pause
-    b_pause();
-    return;
-  }
-  if(pollButton(colorBID)){ // change color scheme
-    b_color();
-    return;
+  Button b;
+  for(int i = 0; i < buttons.size(); i++){
+    b = buttons.get(i);
+    if(b.pollButton()){
+      b.buttonFunction();
+    }
   }
 }
 
-/*
-  Specific button functions are defined below.
-  Each button can have a setup function,
-  called when the button is first pressed.
-*/
-
-void b_reset(){
-  shuffleBoard();
-  tElapsed = 0;
-  moves = 0;
-  deactivateButton(pauseBID);
-  state = State.PREGAME;
-}
-
-void b_resize(){
-  inputTemp = "";
-  deactivateButton(pauseBID);
-  state = State.RESIZE;
-}
-
-void b_pause(){
-  Button pauseButton = buttons.get(pauseBID);
-  pauseButton.text = "Resume";
-  state = State.PAUSED;
-}
-
-void b_color(){ // "state" does not change
-  int i;
-  for(i = 0; i < schemes.size(); i++){
-    if(schemes.get(i).name.equals(activeScheme.name)) break;
+// called after window resizes
+void sizeAllButtons(){
+  for(int i = 0; i < buttons.size(); i++){
+    buttons.get(i).buttonSize();
   }
-  Scheme newScheme;
-  if(i == schemes.size() - 1) newScheme = schemes.get(0);
-  else newScheme = schemes.get(i+1);
-  colorSchemeName = newScheme.name;
-  findButton(colorBID).subtext = colorSchemeName;
-  activeScheme = newScheme;
-  saveDefaults(); // update defaults.json with new colorSchemeName
 }

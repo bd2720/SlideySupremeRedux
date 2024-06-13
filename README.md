@@ -1,9 +1,9 @@
-# SlideySupremeRedux -- V1.1 #  
+# SlideySupremeRedux -- V1.0 #  
 A 2D 15-puzzle of "arbitrary" width and height.  
 Successor to my hard-coded 3x3 version from 2019.  
 Created with the Processing sketchbook (Java Mode).  
   
-Runs in 1280x720 @ 60fps.  
+Runs in 1280x720 or 800x600 @ 60fps.  
 Designed for 16:9 and 4:3 aspect ratios.  
 Supports key controls, but mouse is recommended.  
   
@@ -20,6 +20,7 @@ P : Pause/Unpause the timer.
 R : Re-shuffle the board, resetting the timer and moves counter.  
 X : Change the size of the puzzle (enter "*width* x *height*").  
 C : Cycle the game's color scheme.  
+M : Resize the game window.  
 ESCAPE : Exit the game.  
   
 ***COLOR SCHEMES***  

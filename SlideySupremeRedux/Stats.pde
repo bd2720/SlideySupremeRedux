@@ -72,7 +72,7 @@ void displayWinText(){
   textSize(60);
   textAlign(CENTER, CENTER);
   fill(activeScheme.text);
-  text("You Did It!", 3*width/4, 7*height/16);
+  text("You Did It!", 3*width/4, 3*height/8);
 }
 
 // searches for the current n and m in the (non-null) scores JSONArray
@@ -102,7 +102,7 @@ void initStats(){
   if(scoreID == -1) return; // mxn score record not found
   JSONObject currScore = scores.getJSONObject(scoreID);
   bestTime = currScore.getLong("time");
-  bestTimeStr = currScore.getString("timeStr");
+  bestTimeStr = formatTimeStr(bestTime);
   bestMoves = currScore.getInt("moves");
 }
 
@@ -127,7 +127,6 @@ void updateStats(){
     currScore.setInt("m", m);
     currScore.setInt("n", n);
     currScore.setLong("time", bestTime);
-    currScore.setString("timeStr", bestTimeStr);
     currScore.setInt("moves", bestMoves);
     scores.append(currScore);
     saveJSONArray(scores, scoresFilePath);
@@ -136,7 +135,6 @@ void updateStats(){
   JSONObject currScore = scores.getJSONObject(scoreID);
   if(beatTime){
     currScore.setLong("time", bestTime);
-    currScore.setString("timeStr", bestTimeStr);
   }
   if(beatMoves) currScore.setInt("moves", bestMoves);
   saveJSONArray(scores, scoresFilePath);

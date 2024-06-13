@@ -8,19 +8,6 @@ int n; // vertical board length
 int minDim = 2;
 int maxDim = 31;
 
-// 2D coordinate class
-class Coord {
-  public int x;
-  public int y;
-  Coord(){
-   x = y = 0; 
-  }
-  Coord(int x, int y){
-    this.x = x;
-    this.y = y;
-  }
-}
-
 // useful "constants"
 int mn;
 int nm;
@@ -45,24 +32,32 @@ int moves; // number of moves taken
 int iEmpty; // vertical position of the empty tile
 int jEmpty; // horizontal position of the empty tile
 
+// called in initBoard and after window is resized
+void sizeBoard(){
+  int wSize = (width/2)/m;
+  int hSize = height/n ;
+  tileSize = min(wSize, hSize);
+  tileSize = 9*tileSize/10;
+  boardStart = new Coord(width/4 - m * tileSize / 2, height/2 - n * tileSize / 2);
+  if(mn <= 100) numSize = 9*tileSize/10;
+  else numSize = 3*tileSize/5;
+  boardEnd = new Coord(boardStart.x + m*tileSize, boardStart.y + n*tileSize);
+}
+
 void initBoard(){
+  sizeBoard();
+  
   mn = m*n;
   nm = mn;
   mPn = m+n;
   nPm = mPn;
   mxnStr = m + "x" + n;
   
-  findButton(resizeBID).subtext = mxnStr;
+  resize_button.subtext = mxnStr;
   
   board = new int[n][m];
   // ensures there is some room between the board and the screen.
-  int wSize = (9*width/10)/2/m;
-  int hSize = (9*height/10)/n ;
-  tileSize = min(wSize, hSize); 
-  boardStart = new Coord((9*width/10)/30, (9*height/10)/30);
-  if(mn <= 100) numSize = 9*tileSize/10;
-  else numSize = 3*tileSize/5;
-  boardEnd = new Coord(boardStart.x + m*tileSize, boardStart.y + n*tileSize);
+  
   
   moves = 0;
 }

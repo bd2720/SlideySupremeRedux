@@ -11,23 +11,18 @@
 enum State { INIT, PREGAME, PLAY, SOLVED, RESIZE, PAUSED }
 State state; // initialized in setup()
 
-final String defaultsFileName = "defaults.json";
-final String defaultsFilePath = "data/" + defaultsFileName;
-JSONObject defaults; // stores m, n, and colorSchemeName
-int defaultM = 4;
-int defaultN = 4;
-String defaultColorSchemeName = "DEFAULT";
-
 boolean pmousePressed; // mousePressed 1 frame ago
 boolean pkeyPressed; // keyPressed 1 frame ago
 char pkey; // key (last key pressed) 1 frame ago
 int pkeyCode; // keyCode 1 frame ago
 
 void setup(){
-  size(1280, 720);
+  size(800, 600);
   frameRate(60);
   state = State.INIT;
   loadDefaults();
+  initResolutions();
+  applyResolution(resolutionStr);
   initStats();
   initButtons();
   initSchemes();
@@ -38,9 +33,10 @@ void setup(){
   drawBoard(); 
   displayStatText(); // timer and moves
   //activate buttons
-  activateButton(resetBID);
-  activateButton(resizeBID);
-  activateButton(colorBID);
+  reset_button.activateButton();
+  resize_button.activateButton();
+  theme_button.activateButton();
+  window_button.activateButton();
   state = State.PREGAME;
   pmousePressed = mousePressed;
   pkey = key;
@@ -57,7 +53,7 @@ void draw(){
     case PREGAME: // before the first move
       if(moveTile()){ // transition to PLAY
         tStart = System.currentTimeMillis();
-        activateButton(pauseBID); // pause button only active during play
+        pause_button.activateButton(); // pause button only active during play
         state = State.PLAY;
       }
       pollAllButtons();
@@ -68,7 +64,7 @@ void draw(){
       moveTile();
       if(isSolved()){ // transition to SOLVED
         updateStats();
-        deactivateButton(pauseBID);
+        pause_button.deactivateButton();
         state = State.SOLVED;
       }
       pollAllButtons();
@@ -90,33 +86,4 @@ void draw(){
   pkey = key;
   pkeyPressed = keyPressed;
   pkeyCode = (int)keyCode;
-}
-
-void loadDefaults(){ // load recent values of m, n, colorSchemeName
-  defaults = loadJSONObject(defaultsFileName);
-  if(defaults == null){
-    m = defaultM;
-    n = defaultN;
-    colorSchemeName = defaultColorSchemeName;
-    // create, fill + save "defaults" object
-    defaults = new JSONObject();
-    defaults.setInt("m", defaultM);
-    defaults.setInt("n", defaultN);
-    defaults.setString("colorSchemeName", defaultColorSchemeName);
-    saveJSONObject(defaults, defaultsFilePath);
-    return;
-  }
-  m = defaults.getInt("m");
-  if(m < minDim || m > maxDim) m = defaultM;
-  n = defaults.getInt("n");
-  if(n < minDim || n > maxDim) n = defaultN;
-  colorSchemeName = defaults.getString("colorSchemeName");
-}
-
-void saveDefaults(){ // saves values of m, n, colorSchemeName
-  if(defaults == null) defaults = new JSONObject();
-  defaults.setInt("m", m);
-  defaults.setInt("n", n);
-  defaults.setString("colorSchemeName", colorSchemeName);
-  saveJSONObject(defaults, defaultsFilePath);
 }

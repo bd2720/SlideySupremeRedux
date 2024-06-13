@@ -11,7 +11,7 @@ int newN;
 void puzzleSize(){ // draws, parses menu info for the resize window
   // darken screen
   fill(0, 127);
-  stroke(0, 127);
+  noStroke();
   rectMode(LEFT);
   rect(0, 0, width, height);
   // draw prompt box
@@ -72,7 +72,7 @@ void puzzleSize(){ // draws, parses menu info for the resize window
 void paused(){
   // cover board
   fill(activeScheme.bg);
-  stroke(activeScheme.bg);
+  noStroke();
   rectMode(CORNERS);
   rect(0, 0, width/2, height);
   // darken screen
@@ -84,11 +84,10 @@ void paused(){
   textSize(height/12);
   textAlign(CENTER, CENTER);
   text("PAUSED", width/4, height/3);
-  drawButton(pauseBID);
-  if(!pollButton(pauseBID)) return;
+  pause_button.drawButton();
+  if(!pause_button.pollButton()) return;
   // back to play
-  Button pauseButton = buttons.get(pauseBID);
-  pauseButton.text = "Pause";
+  pause_button.text = "Pause";
   tStart = System.currentTimeMillis() - tElapsed;
   state = State.PLAY;
 }
