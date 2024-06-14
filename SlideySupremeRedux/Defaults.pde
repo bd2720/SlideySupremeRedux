@@ -40,6 +40,7 @@ void loadDefaults(){ // load recent values of m, n, colorSchemeName
     n = defaults.getInt("n");
     if(n < minDim || n > maxDim) n = defaultN;
     colorSchemeName = defaults.getString("colorSchemeName");
+    if(!validateScheme(colorSchemeName)) colorSchemeName = defaultColorSchemeName;
     resolutionStr = defaults.getInt("res.x") + "x" + defaults.getInt("res.y");
     if(!validateResolution(resolutionStr)) resolutionStr = defaultRes.x + "x" + defaultRes.y;
   } catch(Exception e){ // if any of the fields are missing, fill all with defaults

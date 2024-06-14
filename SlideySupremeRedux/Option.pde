@@ -9,13 +9,27 @@ String inputTemp; // buffer for user input
 int newM;
 int newN;
 
+// darkens screen, covers board, "PAUSED"
+void drawPause(){
+}
+
 // called during RESIZE
 void puzzleSize(){ // draws, parses menu info for the resize window
+  // cover board
+  fill(activeScheme.bg);
+  noStroke();
+  rectMode(CORNERS);
+  rect(0, 0, width/2, height);
+  // "PAUSED"
+  fill(activeScheme.text);
+  textSize(height/12);
+  textAlign(CENTER, CENTER);
+  text("PAUSED", width/4, height/4);
   // darken screen
   fill(0, 127);
-  noStroke();
   rectMode(LEFT);
   rect(0, 0, width, height);
+  
   // draw prompt box
   stroke(activeScheme.board);
   fill(activeScheme.tile);
@@ -33,6 +47,11 @@ void puzzleSize(){ // draws, parses menu info for the resize window
   switch(key){
     case ENTER:
     case RETURN:
+      if(inputTemp.isEmpty()){
+         tStart = System.currentTimeMillis() - tElapsed;
+         state = pstate;
+         return;
+      }
       xIndex = inputTemp.indexOf("x");
       if(xIndex == -1) break;
       if(xIndex == inputTemp.length()-1) break;
@@ -48,6 +67,7 @@ void puzzleSize(){ // draws, parses menu info for the resize window
       shuffleBoard();
       tElapsed = 0;
       moves = 0;
+      pause_button.deactivateButton();
       state = State.PREGAME;
       break;
     case BACKSPACE:
@@ -85,7 +105,8 @@ void paused(){
   fill(activeScheme.text);
   textSize(height/12);
   textAlign(CENTER, CENTER);
-  text("PAUSED", width/4, height/3);
+  text("PAUSED", width/4, height/4);
+  
   pause_button.drawButton();
   if(!pause_button.pollButton()) return;
   // back to play
@@ -94,7 +115,6 @@ void paused(){
   state = State.PLAY;
 }
 
-State pstate; // used for restoring the previous state after exiting INFO state
 String infoString;
 
 // called in setup()
@@ -129,6 +149,7 @@ void initInfoString(){
   infoString += "CLOUDY : Soft greyscale theme.\n";
   infoString += "MINT : Low intensity greens.\n";
   infoString += "EARTH : Dark brown, green and blue.\n";
+  infoString += "MAGMA : Dark and hot colors.\n";
 }
 
 // called during INFO state
@@ -151,13 +172,13 @@ void info(){
   if(width/(float)height > 1.5){ // 16:9
     rect(width/4, height/2, 9*width/20, 9*height/10);
   } else { // 4:3
-    rect(width/4, height/2, 9*width/20, 13*height/20);
+    rect(width/4, height/2, 9*width/20, 27*height/40);
   }
   // draw text
   fill(activeScheme.nums);
   textSize(width/60);
   textAlign(LEFT, CENTER);
-  text(infoString, width/30, height/2 + 10);
+  text(infoString, width/32, height/2 + 10);
   if(info_button.pollButton()){
     tStart = System.currentTimeMillis() - tElapsed;
     state = pstate;

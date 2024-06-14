@@ -8,6 +8,7 @@
     CLOUDY  : Soft greyscale theme.
     MINT    : Low intensity greens.
     EARTH   : Dark brown, green and blue.
+    MAGMA   : Dark and hot colors.
 */
 
 String colorSchemeName; // color scheme
@@ -53,6 +54,7 @@ void initSchemes(){
   schemes.add(new Scheme("CLOUDY", #1f1f1f, #cfcfcf, #9f9f9f, #ffffff, #ffffff, #9f9f9f)); // nice soft greyscale
   schemes.add(new Scheme("MINT", #536359, #9bc7ba, #93adac, #defff5, #defff5, #a3c4ba)); // muted greens
   schemes.add(new Scheme("EARTH", #4a382c, #5e788f, #405669, #819cb5, #afc4a5, #708267)); // blue, green and brown
+  schemes.add(new Scheme("MAGMA", #141313, #6e1904, #c74204, #000000, #ffaa4f, #b89469)); // dark and hot colors
 }
 
 /*
@@ -67,4 +69,12 @@ void applyScheme(String schemeName){
     }
   }
   activeScheme = new Scheme(); // apply default
+}
+
+// checks if a color scheme with the given name exists
+boolean validateScheme(String schemeName){
+ for(int i = 0; i < schemes.size(); i++){
+   if((schemes.get(i).name).equals(schemeName)) return true;
+ }
+ return false;
 }

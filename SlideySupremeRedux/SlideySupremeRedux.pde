@@ -9,13 +9,14 @@
 
 enum State { INIT, PREGAME, PLAY, SOLVED, RESIZE, PAUSED, INFO }
 State state; // initialized in setup()
+State pstate; // previous state, in case we want to restore last state
 
 boolean pmousePressed; // mousePressed 1 frame ago
 boolean pkeyPressed; // keyPressed 1 frame ago
 char pkey; // key (last key pressed) 1 frame ago
 int pkeyCode; // keyCode 1 frame ago
 
-void updateIOVars(){
+void updateIOVars(){ // called after each frame
   pmousePressed = mousePressed;
   pkey = key;
   pkeyPressed = keyPressed;

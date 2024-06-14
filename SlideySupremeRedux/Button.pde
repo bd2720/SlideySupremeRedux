@@ -101,7 +101,7 @@ class ResizeButton extends Button {
   }
   void buttonFunction(){
     inputTemp = "";
-    pause_button.deactivateButton();
+    pstate = state; // save prev state, in case we need to restore
     state = State.RESIZE;
   }
 }
