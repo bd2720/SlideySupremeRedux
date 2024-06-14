@@ -15,6 +15,13 @@ boolean pkeyPressed; // keyPressed 1 frame ago
 char pkey; // key (last key pressed) 1 frame ago
 int pkeyCode; // keyCode 1 frame ago
 
+void updateIOVars(){
+  pmousePressed = mousePressed;
+  pkey = key;
+  pkeyPressed = keyPressed;
+  pkeyCode = (int)keyCode;
+}
+
 void setup(){
   size(800, 600);
   frameRate(60);
@@ -39,10 +46,7 @@ void setup(){
   window_button.activateButton();
   info_button.activateButton();
   state = State.PREGAME;
-  pmousePressed = mousePressed;
-  pkey = key;
-  pkeyPressed = keyPressed;
-  pkeyCode = (int)keyCode;
+  updateIOVars();
 }
 
 void draw(){
@@ -85,8 +89,5 @@ void draw(){
     default:
       break;
   }
-  pmousePressed = mousePressed;
-  pkey = key;
-  pkeyPressed = keyPressed;
-  pkeyCode = (int)keyCode;
+  updateIOVars();
 }

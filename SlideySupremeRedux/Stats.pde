@@ -92,7 +92,7 @@ void initStats(){
   bestTimeStr = "";
   bestMoves = Integer.MAX_VALUE;
   // attempt to load score data from file
-  scores = loadJSONArray(scoresFileName);
+  scores = loadJSONArray(sketchPath(scoresFilePath)); // sketchPath() added, or else macOS won't read
   if(scores == null){
     scores = new JSONArray(); // create a new scores array
     return;
