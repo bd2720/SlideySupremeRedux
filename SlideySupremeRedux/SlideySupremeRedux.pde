@@ -1,5 +1,5 @@
 /*
-  15-puzzle of arbitrary size (mxn)
+  Sliding puzzle game of arbitrary size (mxn)
   Successor to my hard-coded 3x3 version from 2019
   
   SlideySupremeRedux.pde: main sketch. calls setup() and draw().
@@ -7,7 +7,7 @@
   Uses switch() and State to simulate a finite state machine.
 */
 
-enum State { INIT, PREGAME, PLAY, SOLVED, RESIZE, PAUSED, INFO }
+enum State { INIT, PREGAME, PLAY, SOLVED, RESIZE, PAUSED, INFO, ERROR }
 State state; // initialized in setup()
 State pstate; // previous state, in case we want to restore last state
 
@@ -26,20 +26,35 @@ void updateIOVars(){ // called after each frame
 void setup(){
   size(800, 600);
   frameRate(60);
-  state = State.INIT;
-  initInfoString();
+  state = State.INIT; //<>//
   initResolutions();
   initSchemes();
-  loadDefaults();
-  applyResolution(resolutionStr);
-  initStats();
-  initButtons();
+  try {
+    loadDefaults();
+  } catch(Exception e){
+    activeScheme = new Scheme();
+    background(activeScheme.bg);
+    // default resolution already hard-coded in size()
+    buildJSONError(e, defaultsFileName);
+    state = State.ERROR;
+    return;
+  }
+  // init. resolution and bg color ASAP
   applyScheme(colorSchemeName);
+  background(activeScheme.bg);
+  applyResolution(resolutionStr);
+  try {
+    initStats();
+  } catch(Exception e){
+    buildJSONError(e, scoresFileName);
+    state = State.ERROR;
+    return;
+  }
+  initInfoString();
+  // vv (depends on correct resolution) vv
+  initButtons();
   initBoard();
   shuffleBoard();
-  background(activeScheme.bg);
-  drawBoard(); 
-  displayStatText(); // timer and moves
   //activate buttons
   reset_button.activateButton();
   resize_button.activateButton();
@@ -52,11 +67,11 @@ void setup(){
 
 void draw(){
   background(activeScheme.bg);
-  drawAllButtons();
-  drawBoard();
-  displayStatText();
-  switch(state){
+  switch(state){ //<>//
     case PREGAME: // before the first move
+      drawAllButtons();
+      drawBoard();
+      displayStatText();
       if(moveTile()){ // transition to PLAY
         tStart = System.currentTimeMillis();
         pause_button.activateButton(); // pause button only active during play
@@ -65,6 +80,9 @@ void draw(){
       pollAllButtons();
       break;
     case PLAY: // after the first move, before solve
+      drawAllButtons();
+      drawBoard();
+      displayStatText();
       tElapsed = System.currentTimeMillis() - tStart;
       // tElapsed *= 600; // time multiplier (debug)
       moveTile();
@@ -76,18 +94,33 @@ void draw(){
       pollAllButtons();
       break;
     case SOLVED: // after puzzle is solved
+      drawAllButtons();
+      drawBoard();
+      displayStatText();
       displayWinText();
       pollAllButtons();
       break;
     case RESIZE: // change m and n
+      drawAllButtons();
+      displayStatText();
       puzzleSize();
       break;
-    case PAUSED:
+    case PAUSED: // pause the game
+      drawAllButtons();
+      displayStatText();
       paused();
       break;
-    case INFO:
+    case INFO: // display info, keys + themes
+      drawAllButtons();
+      displayStatText();
       info();
+      break;
+    case ERROR:
+      displayJSONError();
+      noLoop();
+      break;
     default:
+      noLoop();
       break;
   }
   updateIOVars();

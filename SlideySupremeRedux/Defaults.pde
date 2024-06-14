@@ -36,9 +36,11 @@ void loadDefaults(){ // load recent values of m, n, colorSchemeName
   }
   try {
     m = defaults.getInt("m");
-    if(m < minDim || m > maxDim) m = defaultM;
     n = defaults.getInt("n");
-    if(n < minDim || n > maxDim) n = defaultN;
+    if(m < minDim || m > maxDim || n < minDim || n > maxDim){
+      m = defaultM;
+      n = defaultN;
+    }
     colorSchemeName = defaults.getString("colorSchemeName");
     if(!validateScheme(colorSchemeName)) colorSchemeName = defaultColorSchemeName;
     resolutionStr = defaults.getInt("res.x") + "x" + defaults.getInt("res.y");

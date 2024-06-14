@@ -7,6 +7,7 @@ int m; // horizontal board length
 int n; // vertical board length
 int minDim = 2;
 int maxDim = 31;
+int maxDimLog = String.valueOf(maxDim).length(); // number of digits in maxDim
 
 // useful "constants"
 int mn;
@@ -39,8 +40,8 @@ void sizeBoard(){
   tileSize = min(wSize, hSize);
   tileSize = 9*tileSize/10;
   boardStart = new Coord(width/4 - m * tileSize / 2, height/2 - n * tileSize / 2);
-  if(mn <= 100) numSize = 9*tileSize/10;
-  else numSize = 3*tileSize/5;
+  if(mn > 100) numSize = 3*tileSize/5;
+  else numSize = 9*tileSize/10;
   boardEnd = new Coord(boardStart.x + m*tileSize, boardStart.y + n*tileSize);
 }
 
@@ -53,6 +54,7 @@ void initBoard(){
   sizeBoard(); // must go here so that "mn" is updated
   resize_button.subtext = mxnStr;
   board = new int[n][m];
+  board[0][0] = -1; // signal uninitialized
   moves = 0;
 }
 
@@ -117,8 +119,7 @@ void shuffleBoard(){
     }
     
     // determine if shuffle is valid
-    valid = ((inversions + iEmpty + jEmpty + mPn) & 1) == 0;
-  } while(!valid);
+  } while(((inversions + iEmpty + jEmpty + mPn) & 1) != 0);
   
   // copy nums to board
   for(i = 0; i < n; i++){

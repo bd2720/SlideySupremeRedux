@@ -9,17 +9,8 @@ String inputTemp; // buffer for user input
 int newM;
 int newN;
 
-// darkens screen, covers board, "PAUSED"
-void drawPause(){
-}
-
 // called during RESIZE
 void puzzleSize(){ // draws, parses menu info for the resize window
-  // cover board
-  fill(activeScheme.bg);
-  noStroke();
-  rectMode(CORNERS);
-  rect(0, 0, width/2, height);
   // "PAUSED"
   fill(activeScheme.text);
   textSize(height/12);
@@ -34,7 +25,7 @@ void puzzleSize(){ // draws, parses menu info for the resize window
   stroke(activeScheme.board);
   fill(activeScheme.tile);
   rectMode(CENTER);
-  rect(width/2, height/2, height/2, height/4);
+  rect(width/2, height/2 - 10, height/2, height/4);
   fill(activeScheme.nums);
   textSize(height/30);
   textAlign(CENTER, CENTER);
@@ -47,7 +38,7 @@ void puzzleSize(){ // draws, parses menu info for the resize window
   switch(key){
     case ENTER:
     case RETURN:
-      if(inputTemp.isEmpty()){
+      if(inputTemp.isEmpty()){ // if prompt empty, resume
          tStart = System.currentTimeMillis() - tElapsed;
          state = pstate;
          return;
@@ -56,13 +47,24 @@ void puzzleSize(){ // draws, parses menu info for the resize window
       if(xIndex == -1) break;
       if(xIndex == inputTemp.length()-1) break;
       tempStr = inputTemp.substring(xIndex + 1); // the string after "x"
-      if(tempStr.length() > 2) break; // prevent overflow crash
+      if(tempStr.length() > maxDimLog) break; // prevent overflow crash
       newN = Integer.parseInt(tempStr);
       if(newN < minDim || newN > maxDim) break;
+      if(newN == n && newM == m){ // if dims are the same, resume
+         tStart = System.currentTimeMillis() - tElapsed;
+         state = pstate;
+         return;
+      }
       m = newM;
       n = newN;
+      try {
+        initStats();
+      } catch(Exception e){
+        buildJSONError(e, scoresFileName);
+        state = State.ERROR;
+        return;
+      }
       saveDefaults(); // update defaults.json with new m and n
-      initStats();
       initBoard();
       shuffleBoard();
       tElapsed = 0;
@@ -77,7 +79,7 @@ void puzzleSize(){ // draws, parses menu info for the resize window
     case 'x':
     case 'X':
       if(inputTemp.length() == 0 || inputTemp.indexOf("x") >= 0) break;
-      if(inputTemp.length() > 2) break; // prevent overflow crash
+      if(inputTemp.length() > maxDimLog) break; // prevent overflow crash
       newM = Integer.parseInt(inputTemp);
       if(newM < minDim || newM > maxDim) break;
       inputTemp += "x";
@@ -92,11 +94,6 @@ void puzzleSize(){ // draws, parses menu info for the resize window
 
 // called during the PAUSED state.
 void paused(){
-  // cover board
-  fill(activeScheme.bg);
-  noStroke();
-  rectMode(CORNERS);
-  rect(0, 0, width/2, height);
   // darken screen
   fill(0, 127);
   rectMode(LEFT);
