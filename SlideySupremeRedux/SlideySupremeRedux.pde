@@ -26,7 +26,7 @@ void updateIOVars(){ // called after each frame
 void setup(){
   size(800, 600);
   frameRate(60);
-  state = State.INIT; //<>//
+  state = State.INIT;
   initResolutions();
   initSchemes();
   try {
@@ -67,7 +67,7 @@ void setup(){
 
 void draw(){
   background(activeScheme.bg);
-  switch(state){ //<>//
+  switch(state){
     case PREGAME: // before the first move
       drawAllButtons();
       drawBoard();
@@ -109,11 +109,21 @@ void draw(){
       drawAllButtons();
       displayStatText();
       paused();
+      // theme and window should work here
+      theme_button.drawButton();
+      window_button.drawButton();
+      if(theme_button.pollButton()) theme_button.buttonFunction();
+      if(window_button.pollButton()) window_button.buttonFunction();
       break;
     case INFO: // display info, keys + themes
       drawAllButtons();
       displayStatText();
       info();
+      // theme and window should work here
+      theme_button.drawButton();
+      window_button.drawButton();
+      if(theme_button.pollButton()) theme_button.buttonFunction();
+      if(window_button.pollButton()) window_button.buttonFunction();
       break;
     case ERROR:
       displayJSONError();

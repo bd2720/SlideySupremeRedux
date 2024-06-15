@@ -103,7 +103,6 @@ void paused(){
   textSize(height/12);
   textAlign(CENTER, CENTER);
   text("PAUSED", width/4, height/4);
-  
   pause_button.drawButton();
   if(!pause_button.pollButton()) return;
   // back to play
@@ -177,6 +176,7 @@ void info(){
   textAlign(LEFT, CENTER);
   text(infoString, width/32, height/2 + 10);
   if(info_button.pollButton()){
+    info_button.text = "Info";
     tStart = System.currentTimeMillis() - tElapsed;
     state = pstate;
   }

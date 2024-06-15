@@ -54,7 +54,6 @@ void initBoard(){
   sizeBoard(); // must go here so that "mn" is updated
   resize_button.subtext = mxnStr;
   board = new int[n][m];
-  board[0][0] = -1; // signal uninitialized
   moves = 0;
 }
 
@@ -88,7 +87,7 @@ void shuffleBoard(){
   int inversions;
   iEmpty = 0;
   jEmpty = 0; 
-  boolean valid = false;
+  boolean valid;
   
   // populate nums
   for(i = 1; i <= mn; i++){
@@ -99,6 +98,7 @@ void shuffleBoard(){
     // ensure the shuffle is not sorted
     do {
       nums.shuffle();
+      valid = false;
       for(i = 0; i < mn; i++){
         if(nums.get(i) != i+1){
           valid = true;
@@ -127,7 +127,6 @@ void shuffleBoard(){
       board[i][j] = nums.get(i*m + j);
     }
   }
-  
 }
 
 void drawBoard(){

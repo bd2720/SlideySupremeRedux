@@ -123,6 +123,7 @@ class PauseButton extends Button {
   }
   void buttonFunction(){
     pause_button.text = "Resume";
+    pstate = state;
     state = State.PAUSED;
   }
 }
@@ -198,13 +199,14 @@ class InfoButton extends Button {
     this.buttonSize();
   }
   void buttonSize(){
-    textSize = height/19;
+    textSize = height/16;
     bX = 5*width/8;
     bY = 11*height/16;
     bWidth = width/6;
     bHeight = height/8;
   }
   void buttonFunction(){
+    info_button.text = "Resume";
     pstate = state;
     state = State.INFO;
   }

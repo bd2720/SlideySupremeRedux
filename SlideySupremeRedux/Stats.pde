@@ -66,7 +66,7 @@ String formatTimeStr(long timeElapsed){
 
 // called in SOLVED
 void displayWinText(){
-  textSize(60);
+  textSize(height/12);
   textAlign(CENTER, CENTER);
   fill(activeScheme.text);
   text("You Did It!", 3*width/4, 3*height/8);
