@@ -18,6 +18,7 @@ void puzzleSize(){ // draws, parses menu info for the resize window
   text("PAUSED", width/4, height/4);
   // darken screen
   fill(0, 127);
+  noStroke();
   rectMode(LEFT);
   rect(0, 0, width, height);
   
@@ -96,6 +97,7 @@ void puzzleSize(){ // draws, parses menu info for the resize window
 void paused(){
   // darken screen
   fill(0, 127);
+  noStroke();
   rectMode(LEFT);
   rect(0, 0, width, height);
   // "PAUSED"
@@ -130,12 +132,12 @@ void initInfoString(){
   infoString += "A / LEFT: Move a tile left to fill the empty square.\n";
   infoString += "S / DOWN: Move a tile down to fill the empty square.\n";
   infoString += "D / RIGHT: Move a tile right to fill the empty square.\n";
-  infoString += "P : Pause/Unpause the timer.\n";
+  infoString += "P : Pause/Unpause the game.\n";
   infoString += "R : Re-shuffle the board, resetting the timer and moves counter.\n";
+  infoString += "I : Display/Hide info about the game.\n";
   infoString += "X : Change the size of the puzzle (enter \"width x height\").\n";
-  infoString += "C : Cycle the game's color scheme.\n";
   infoString += "M : Resize the game window.\n";
-  infoString += "I : Display info about the game.\n";
+  infoString += "C : Cycle the game's color scheme.\n";
   infoString += "ESCAPE : Exit the game.\n";
   infoString += "\n";
   // themes
@@ -150,13 +152,9 @@ void initInfoString(){
 
 // called during INFO state
 void info(){
-  // cover board
-  fill(activeScheme.bg);
-  noStroke();
-  rectMode(CORNERS);
-  rect(0, 0, width/2, height);
   // darken screen
   fill(0, 127);
+  noStroke();
   rectMode(LEFT);
   rect(0, 0, width, height);
   // draw info button
