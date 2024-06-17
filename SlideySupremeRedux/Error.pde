@@ -23,7 +23,7 @@ void buildJSONError(Exception e, String filename, boolean write){
   if(write){
     errorStr += "Ensure this application has sufficient permissions,\n";
     errorStr += "and is located in a place where it can safely write \"";
-    errorStr += defaultsFilePath + "\".";
+    errorStr += "data/" + filename + "\".";
     return;
   }
   errorStr += "Correct the formatting of this JSON structure,\n";
