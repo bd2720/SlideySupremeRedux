@@ -58,14 +58,8 @@ void puzzleSize(){ // draws, parses menu info for the resize window
       }
       m = newM;
       n = newN;
-      try {
-        initStats();
-      } catch(Exception e){
-        buildJSONError(e, scoresFileName);
-        state = State.ERROR;
-        return;
-      }
-      saveDefaults(); // update defaults.json with new m and n
+      if(!loadStatsSafe()) return;
+      if(!saveDefaultsSafe()) return; // update defaults.json with new m and n
       initBoard();
       shuffleBoard();
       tElapsed = 0;

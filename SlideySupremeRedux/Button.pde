@@ -16,7 +16,7 @@ abstract class Button {
   int bHeight; // button height
   char bKey; // keyboard key for button
   char bKey2; // alternate key (opposite case)
-  abstract void buttonFunction(); // function to be executed once, upon button press
+  abstract boolean buttonFunction(); // function to be executed once, upon button press (false if error)
   abstract void buttonSize(); // needed for efficiently resizing buttons after window resize
   
   // sets the button's "active" field. returns the previous value
@@ -75,12 +75,13 @@ class ResetButton extends Button {
     bWidth = width/6;
     bHeight = height/8;
   }
-  void buttonFunction(){
+  boolean buttonFunction(){
     shuffleBoard();
     tElapsed = 0;
     moves = 0;
     pause_button.deactivateButton();
     state = State.PREGAME;
+    return true;
   }
 }
 
@@ -99,10 +100,11 @@ class ResizeButton extends Button {
     bWidth = width/6;
     bHeight = height/8;
   }
-  void buttonFunction(){
+  boolean buttonFunction(){
     inputTemp = "";
     pstate = state; // save prev state, in case we need to restore
     state = State.RESIZE;
+    return true;
   }
 }
 
@@ -121,10 +123,11 @@ class PauseButton extends Button {
     bWidth = width/6;
     bHeight = height/8; 
   }
-  void buttonFunction(){
+  boolean buttonFunction(){
     pause_button.text = "Resume";
     pstate = state;
     state = State.PAUSED;
+    return true;
   }
 }
 
@@ -143,7 +146,7 @@ class ThemeButton extends Button {
     bWidth = width/6;
     bHeight = height/8; 
   }
-  void buttonFunction(){
+  boolean buttonFunction(){
     int i;
     for(i = 0; i < schemes.size(); i++){
       if(schemes.get(i).name.equals(activeScheme.name)) break;
@@ -154,7 +157,7 @@ class ThemeButton extends Button {
     colorSchemeName = newScheme.name;
     this.subtext = colorSchemeName;
     activeScheme = newScheme;
-    saveDefaults(); // update defaults.json with new colorSchemeName
+    return saveDefaultsSafe(); // update defaults.json with new colorSchemeName
   }
 }
 
@@ -173,7 +176,7 @@ class WindowButton extends Button {
     bWidth = width/6;
     bHeight = height/8;
   }
-  void buttonFunction(){
+  boolean buttonFunction(){
     int i;
     for(i = 0; i < resolutions.size(); i++){
       if(resolutions.get(i).equals(activeResolution)) break;
@@ -186,7 +189,7 @@ class WindowButton extends Button {
     applyResolution(resolutionStr);
     sizeBoard();
     sizeAllButtons();
-    saveDefaults(); // update defaults.json with new screen resolution
+    return saveDefaultsSafe(); // update defaults.json with new screen resolution
   }
 }
 
@@ -205,10 +208,11 @@ class InfoButton extends Button {
     bWidth = width/6;
     bHeight = height/8;
   }
-  void buttonFunction(){
+  boolean buttonFunction(){
     info_button.text = "Resume";
     pstate = state;
     state = State.INFO;
+    return true;
   }
 }
 

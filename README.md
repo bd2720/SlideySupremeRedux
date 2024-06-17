@@ -1,4 +1,4 @@
-# SlideySupremeRedux -- V1.1.1 #  
+# SlideySupremeRedux -- V1.1.2 #  
 A 2D sliding puzzle of "arbitrary" width and height.  
 Successor to my hard-coded 3x3 version from 2019.  
 Created with the Processing sketchbook (Java Mode).  

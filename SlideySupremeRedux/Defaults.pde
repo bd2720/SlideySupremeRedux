@@ -28,7 +28,7 @@ void fillDefaults(){
 }
 
 void loadDefaults(){ // load recent values of m, n, colorSchemeName
-  defaults = loadJSONObject(sketchPath(defaultsFilePath)); // sketchPath() added, or else macOS won't read
+  defaults = loadJSONObject(defaultsFileName);
   if(defaults == null){
     defaults = new JSONObject();
     fillDefaults();

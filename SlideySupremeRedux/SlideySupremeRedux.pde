@@ -29,27 +29,12 @@ void setup(){
   state = State.INIT;
   initResolutions();
   initSchemes();
-  try {
-    loadDefaults();
-  } catch(Exception e){
-    activeScheme = new Scheme();
-    background(activeScheme.bg);
-    // default resolution already hard-coded in size()
-    buildJSONError(e, defaultsFileName);
-    state = State.ERROR;
-    return;
-  }
+  if(!loadDefaultsSafe()) return;
   // init. resolution and bg color ASAP
   applyScheme(colorSchemeName);
   background(activeScheme.bg);
   applyResolution(resolutionStr);
-  try {
-    initStats();
-  } catch(Exception e){
-    buildJSONError(e, scoresFileName);
-    state = State.ERROR;
-    return;
-  }
+  if(!loadStatsSafe()) return;
   initInfoString();
   // vv (depends on correct resolution) vv
   initButtons();
@@ -84,10 +69,9 @@ void draw(){
       drawBoard();
       displayStatText();
       tElapsed = System.currentTimeMillis() - tStart;
-      // tElapsed *= 600; // time multiplier (debug)
       moveTile();
       if(isSolved()){ // transition to SOLVED
-        updateStats();
+        if(!saveStatsSafe()) return;
         pause_button.deactivateButton();
         state = State.SOLVED;
       }
@@ -112,8 +96,12 @@ void draw(){
       // theme and window should work here
       theme_button.drawButton();
       window_button.drawButton();
-      if(theme_button.pollButton()) theme_button.buttonFunction();
-      if(window_button.pollButton()) window_button.buttonFunction();
+      if(theme_button.pollButton()){
+        if(!theme_button.buttonFunction()) return;
+      }
+      if(window_button.pollButton()){
+        if(!window_button.buttonFunction()) return;
+      }
       break;
     case INFO: // display info, keys + themes
       drawAllButtons();
@@ -122,8 +110,12 @@ void draw(){
       // theme and window should work here
       theme_button.drawButton();
       window_button.drawButton();
-      if(theme_button.pollButton()) theme_button.buttonFunction();
-      if(window_button.pollButton()) window_button.buttonFunction();
+      if(theme_button.pollButton()){
+        if(!theme_button.buttonFunction()) return;
+      }
+      if(window_button.pollButton()){
+        if(!window_button.buttonFunction()) return;
+      }
       break;
     case ERROR:
       displayJSONError();

@@ -86,13 +86,13 @@ int getScoreIndex(int currM, int currN){
 }
 
 // called in setup() (INIT)
-void initStats(){
+void loadStats(){
   // default values
   bestTime = Long.MAX_VALUE;
   bestTimeStr = "";
   bestMoves = Integer.MAX_VALUE;
   // attempt to load score data from file
-  scores = loadJSONArray(sketchPath(scoresFilePath)); // sketchPath() added, or else macOS won't read
+  scores = loadJSONArray(scoresFileName);
   if(scores == null){
     scores = new JSONArray(); // create a new scores array
     return;
@@ -121,7 +121,7 @@ void initStats(){
 }
 
 // called during : PLAY --> SOLVED
-void updateStats(){
+void saveStats(){
   boolean beatTime = false;
   boolean beatMoves = false;
   if(tElapsed < bestTime){
@@ -145,7 +145,7 @@ void updateStats(){
     scores.append(currScore);
     saveJSONArray(scores, scoresFilePath);
     return;
-  };
+  }
   JSONObject currScore = scores.getJSONObject(scoreID);
   if(beatTime) currScore.setLong("time", bestTime);
   if(beatMoves) currScore.setInt("moves", bestMoves);
