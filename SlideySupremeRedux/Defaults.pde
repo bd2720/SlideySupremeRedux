@@ -28,7 +28,7 @@ void fillDefaults(){
 }
 
 void loadDefaults(){ // load recent values of m, n, colorSchemeName
-  defaults = loadJSONObject(defaultsFileName);
+  defaults = loadJSONObject(dataPath(defaultsFileName));
   if(defaults == null){
     defaults = new JSONObject();
     fillDefaults();
@@ -58,5 +58,5 @@ void saveDefaults(){ // saves values of m, n, colorSchemeName, resolution
   defaults.setString("colorSchemeName", colorSchemeName);
   defaults.setInt("res.x", activeResolution.x);
   defaults.setInt("res.y", activeResolution.y);
-  saveJSONObject(defaults, defaultsFilePath);
+  saveJSONObject(defaults, dataPath(defaultsFileName));
 }

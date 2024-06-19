@@ -92,7 +92,7 @@ void loadStats(){
   bestTimeStr = "";
   bestMoves = Integer.MAX_VALUE;
   // attempt to load score data from file
-  scores = loadJSONArray(scoresFileName);
+  scores = loadJSONArray(dataPath(scoresFileName));
   if(scores == null){
     scores = new JSONArray(); // create a new scores array
     return;
@@ -143,11 +143,11 @@ void saveStats(){
     currScore.setLong("time", bestTime);
     currScore.setInt("moves", bestMoves);
     scores.append(currScore);
-    saveJSONArray(scores, scoresFilePath);
+    saveJSONArray(scores, dataPath(scoresFileName));
     return;
   }
   JSONObject currScore = scores.getJSONObject(scoreID);
   if(beatTime) currScore.setLong("time", bestTime);
   if(beatMoves) currScore.setInt("moves", bestMoves);
-  saveJSONArray(scores, scoresFilePath);
+  saveJSONArray(scores, dataPath(scoresFileName));
 }
