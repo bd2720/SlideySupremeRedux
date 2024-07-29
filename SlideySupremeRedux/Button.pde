@@ -215,6 +215,27 @@ class InfoButton extends Button {
     return true;
   }
 }
+// playback a demo/recording of the fastest solve, if available
+class DemoButton extends Button {
+  DemoButton(){ 
+    text = "View Demo";
+    subtext = "";
+    bKey = 'z';
+    bKey2 = 'Z';
+    this.buttonSize();
+  }
+  void buttonSize(){
+    textSize = height/32;
+    bX = 5*width/8;
+    bY = 9*height/24 - 10;
+    bWidth = height/6;
+    bHeight = height/24;
+  }
+  boolean buttonFunction(){
+    // load demo
+    return true;
+  }
+}
 
 ArrayList<Button> buttons;
 
@@ -224,6 +245,7 @@ PauseButton pause_button;
 ThemeButton theme_button;
 WindowButton window_button;
 InfoButton info_button;
+DemoButton demo_button;
 
 // called during setup()
 void initButtons(){
@@ -240,6 +262,8 @@ void initButtons(){
   buttons.add(window_button);
   info_button = new InfoButton();
   buttons.add(info_button);
+  demo_button = new DemoButton();
+  buttons.add(demo_button);
 }
 
 // draws all buttons; inactive buttons are greyed out

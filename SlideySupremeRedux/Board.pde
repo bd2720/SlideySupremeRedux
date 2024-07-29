@@ -231,8 +231,9 @@ boolean arrowKeyMove(){
 }
 
 boolean moveTile(){
-  int i = (mouseY - boardStart.y)/tileSize;
-  int j = (mouseX - boardStart.x)/tileSize;
+  // fixed integer division error
+  int i = Math.floorDiv((mouseY - boardStart.y), tileSize);
+  int j = Math.floorDiv((mouseX - boardStart.x), tileSize);
   boolean clicked = mousePressed && j >= 0 && j < m && i >= 0 && i < n;
   if(!clicked){ // mouse input takes priority over key input
     if(!keyPressed) return false;
