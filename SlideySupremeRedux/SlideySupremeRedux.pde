@@ -7,7 +7,7 @@
   Uses switch() and State to simulate a finite state machine.
 */
 
-enum State { INIT, PREGAME, PLAY, SOLVED, RESIZE, PAUSED, INFO, ERROR }
+enum State { INIT, PREGAME, PLAY, SOLVED, RESIZE, PAUSED, INFO, ERROR, DEMO }
 State state; // initialized in setup()
 State pstate; // previous state, in case we want to restore last state
 
@@ -40,6 +40,7 @@ void setup(){
   initButtons();
   initBoard();
   shuffleBoard();
+  initDemoBuilder(m, n);
   //activate buttons
   reset_button.activateButton();
   resize_button.activateButton();
@@ -57,7 +58,9 @@ void draw(){
       drawAllButtons();
       drawBoard();
       displayStatText();
-      if(moveTile()){ // transition to PLAY
+      currMove = moveTile();
+      if(currMove != Move.NONE){ // transition to PLAY
+        demo_builder.logInput(0);
         tStart = System.currentTimeMillis();
         pause_button.activateButton(); // pause button only active during play
         state = State.PLAY;
@@ -69,7 +72,9 @@ void draw(){
       drawBoard();
       displayStatText();
       tElapsed = System.currentTimeMillis() - tStart;
-      moveTile();
+      currMove = moveTile();
+      demo_builder.logInput(tElapsed);
+      if(currMove != Move.NONE);
       if(isSolved()){ // transition to SOLVED
         if(!saveStatsSafe()) return;
         pause_button.deactivateButton();

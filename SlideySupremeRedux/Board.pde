@@ -33,6 +33,24 @@ int moves; // number of moves taken
 int iEmpty; // vertical position of the empty tile
 int jEmpty; // horizontal position of the empty tile
 
+// Up, Down, Left, Right, None
+enum Move {
+  NONE(0),
+  U(1),
+  D(2),
+  L(3),
+  R(4);
+  private int val;
+  private Move(int v){
+    this.val = v; 
+  }
+  public int toInt(){
+    return this.val; 
+  }
+}
+Move currMove;               // move done on current frame
+
+
 // called in initBoard and after window is resized
 void sizeBoard(){
   int wSize = (width/2)/m;
@@ -157,7 +175,7 @@ void drawBoard(){
 }
 
 // called by moveTile() if WASD is pressed
-boolean keyMove(){
+Move keyMove(){
   switch(key){
     case 'w':
       if(iEmpty+1 >= n) break;
@@ -165,36 +183,36 @@ boolean keyMove(){
       board[iEmpty+1][jEmpty] = mn;
       iEmpty++;
       moves++;
-      return true;
+      return Move.U;
     case 's':
       if(iEmpty-1 < 0) break;
       board[iEmpty][jEmpty] = board[iEmpty-1][jEmpty];
       board[iEmpty-1][jEmpty] = mn;
       iEmpty--;
       moves++;
-      return true;
+      return Move.D;
     case 'a':
       if(jEmpty+1 >= m) break;
       board[iEmpty][jEmpty] = board[iEmpty][jEmpty+1];
       board[iEmpty][jEmpty+1] = mn;
       jEmpty++;
       moves++;
-      return true;
+      return Move.L;
     case 'd':
       if(jEmpty-1 < 0) break;
       board[iEmpty][jEmpty] = board[iEmpty][jEmpty-1];
       board[iEmpty][jEmpty-1] = mn;
       jEmpty--;
       moves++;
-      return true;
+      return Move.R;
     default:
       break;
   }
-  return false;
+  return Move.NONE;
 }
 
 // called by moveTile() if arrow keys are pressed
-boolean arrowKeyMove(){
+Move arrowKeyMove(){
   switch(keyCode){
     case UP:
       if(iEmpty+1 >= n) break;
@@ -202,41 +220,41 @@ boolean arrowKeyMove(){
       board[iEmpty+1][jEmpty] = mn;
       iEmpty++;
       moves++;
-      return true;
+      return Move.U;
     case DOWN:
       if(iEmpty-1 < 0) break;
       board[iEmpty][jEmpty] = board[iEmpty-1][jEmpty];
       board[iEmpty-1][jEmpty] = mn;
       iEmpty--;
       moves++;
-      return true;
+      return Move.D;
     case LEFT:
       if(jEmpty+1 >= m) break;
       board[iEmpty][jEmpty] = board[iEmpty][jEmpty+1];
       board[iEmpty][jEmpty+1] = mn;
       jEmpty++;
       moves++;
-      return true;
+      return Move.L;
     case RIGHT:
       if(jEmpty-1 < 0) break;
       board[iEmpty][jEmpty] = board[iEmpty][jEmpty-1];
       board[iEmpty][jEmpty-1] = mn;
       jEmpty--;
       moves++;
-      return true;
+      return Move.R;
     default:
       break;
   }
-  return false;
+  return Move.NONE;
 }
 
-boolean moveTile(){
+Move moveTile(){
   // fixed integer division error
   int i = Math.floorDiv((mouseY - boardStart.y), tileSize);
   int j = Math.floorDiv((mouseX - boardStart.x), tileSize);
   boolean clicked = mousePressed && j >= 0 && j < m && i >= 0 && i < n;
   if(!clicked){ // mouse input takes priority over key input
-    if(!keyPressed) return false;
+    if(!keyPressed) return Move.NONE;
     if(key != CODED){ // WASD
       if((!pkeyPressed || pkey != key) && (key == 'w' || key == 'a' || key == 's' || key == 'd')){
         return keyMove(); 
@@ -246,7 +264,7 @@ boolean moveTile(){
         return arrowKeyMove();
       }
     }
-    return false;
+    return Move.NONE;
   }
   // if empty tile is UP
   if(i-1 >= 0 && board[i-1][j] == mn){
