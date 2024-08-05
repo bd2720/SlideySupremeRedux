@@ -60,7 +60,7 @@ void draw(){
       displayStatText();
       currMove = moveTile();
       if(currMove != Move.NONE){ // transition to PLAY
-        demo_builder.logInput(0);
+        demo_builder.logInput(0, currMove);
         tStart = System.currentTimeMillis();
         pause_button.activateButton(); // pause button only active during play
         state = State.PLAY;
@@ -73,10 +73,12 @@ void draw(){
       displayStatText();
       tElapsed = System.currentTimeMillis() - tStart;
       currMove = moveTile();
-      demo_builder.logInput(tElapsed);
-      if(currMove != Move.NONE);
+      if(currMove != Move.NONE) demo_builder.logInput(tElapsed, currMove);
       if(isSolved()){ // transition to SOLVED
         if(!saveStatsSafe()) return;
+        if(beatTime){
+          if(!saveDemoSafe(demo_builder)) return; 
+        }
         pause_button.deactivateButton();
         state = State.SOLVED;
       }

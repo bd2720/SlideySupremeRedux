@@ -17,6 +17,9 @@ final String scoresFileName = "scores.json"; // load here
 final String scoresFilePath = "data/" + scoresFileName; // save here
 JSONArray scores; // array of JSON Objects: {"mxn", time, timeStr, moves}
 
+boolean beatTime;  // did we beat the best time?
+boolean beatMoves; // did we beat the fewest moves?
+
 // display text for moves and timer
 void displayStatText(){
   textAlign(RIGHT);
@@ -122,8 +125,8 @@ void loadStats(){
 
 // called during : PLAY --> SOLVED
 void saveStats(){
-  boolean beatTime = false;
-  boolean beatMoves = false;
+  beatTime = false;
+  beatMoves = false;
   if(tElapsed < bestTime){
     bestTime = tElapsed;
     bestTimeStr = formatTimeStr(bestTime);

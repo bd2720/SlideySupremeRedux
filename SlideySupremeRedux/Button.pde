@@ -77,6 +77,7 @@ class ResetButton extends Button {
   }
   boolean buttonFunction(){
     shuffleBoard();
+    initDemoBuilder(m, n);
     tElapsed = 0;
     moves = 0;
     pause_button.deactivateButton();

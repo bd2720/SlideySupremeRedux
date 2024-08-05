@@ -50,7 +50,6 @@ enum Move {
 }
 Move currMove;               // move done on current frame
 
-
 // called in initBoard and after window is resized
 void sizeBoard(){
   int wSize = (width/2)/m;
@@ -272,7 +271,7 @@ Move moveTile(){
     board[i][j] = mn;
     iEmpty = i;
     moves++;
-    return true;
+    return Move.U;
   }
   // if empty tile is DOWN
   if(i+1 < n && board[i+1][j] == mn){
@@ -280,7 +279,7 @@ Move moveTile(){
     board[i][j] = mn;
     iEmpty = i;
     moves++;
-    return true;
+    return Move.D;
   }
   // if empty tile is LEFT
   if(j-1 >= 0 && board[i][j-1] == mn){
@@ -288,7 +287,7 @@ Move moveTile(){
     board[i][j] = mn;
     jEmpty = j;
     moves++;
-    return true;
+    return Move.L;
   }
   // if empty tile is RIGHT
   if(j+1 < m && board[i][j+1] == mn){
@@ -296,7 +295,7 @@ Move moveTile(){
     board[i][j] = mn;
     jEmpty = j;
     moves++;
-    return true;
+    return Move.R;
   }
-  return false;
+  return Move.NONE;
 }

@@ -62,6 +62,7 @@ void puzzleSize(){ // draws, parses menu info for the resize window
       if(!saveDefaultsSafe()) return; // update defaults.json with new m and n
       initBoard();
       shuffleBoard();
+      initDemoBuilder(m, n);
       tElapsed = 0;
       moves = 0;
       pause_button.deactivateButton();

@@ -90,3 +90,17 @@ boolean saveStatsSafe(){
   }
   return false;
 }
+
+boolean loadDemoSafe(){
+  return false;
+}
+
+boolean saveDemoSafe(DemoBuilder db){
+  try {
+    db.saveDemoDB();
+    return true;
+  } catch(Exception e){
+    buildJSONError(e, db.getDemoPath(), true);
+  }
+  return false;
+}
