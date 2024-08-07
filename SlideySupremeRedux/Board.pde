@@ -8,17 +8,11 @@ int n; // vertical board length
 int minDim = 2;
 int maxDim = 31;
 int maxDimLog = String.valueOf(maxDim).length(); // number of digits in maxDim
-
-// useful "constants"
-int mn;
-int nm;
-int mPn;
-int nPm;
-String mxnStr;
+String mxnStr; // "m" + "n"
 
 /*
   board is stored n x m.
-  mn represents the empty tile.
+  m*n represents the empty tile.
 */
 
 // to be initialized by initBoard()
@@ -57,18 +51,14 @@ void sizeBoard(){
   tileSize = min(wSize, hSize);
   tileSize = 9*tileSize/10;
   boardStart = new Coord(width/4 - m * tileSize / 2, height/2 - n * tileSize / 2);
-  if(mn > 100) numSize = 3*tileSize/5;
+  if(m*n > 100) numSize = 3*tileSize/5;
   else numSize = 9*tileSize/10;
   boardEnd = new Coord(boardStart.x + m*tileSize, boardStart.y + n*tileSize);
 }
 
 void initBoard(){
-  mn = m*n;
-  nm = mn;
-  mPn = m+n;
-  nPm = mPn;
   mxnStr = m + "x" + n;
-  sizeBoard(); // must go here so that "mn" is updated
+  sizeBoard();
   resize_button.subtext = mxnStr;
   board = new int[n][m];
   moves = 0;
@@ -77,9 +67,9 @@ void initBoard(){
 int countInversions(IntList nums){
   int inversions = 0;
   for(int i = 0; i < nums.size(); i++){
-    //if(nums.get(i) == mn) continue;
+    //if(nums.get(i) == m*n) continue;
     for(int j = i+1; j < nums.size(); j++){
-      //if(nums.get(j) == mn) continue;
+      //if(nums.get(j) == m*n) continue;
       if(nums.get(i) > nums.get(j)) inversions++;
     }
   }
@@ -107,7 +97,7 @@ void shuffleBoard(){
   boolean valid;
   
   // populate nums
-  for(i = 1; i <= mn; i++){
+  for(i = 1; i <= m*n; i++){
     nums.append(i);
   }
   // shuffle until valid
@@ -116,7 +106,7 @@ void shuffleBoard(){
     do {
       nums.shuffle();
       valid = false;
-      for(i = 0; i < mn; i++){
+      for(i = 0; i < m*n; i++){
         if(nums.get(i) != i+1){
           valid = true;
           break;
@@ -127,8 +117,8 @@ void shuffleBoard(){
     // count inversions
     inversions = countInversions(nums);
     // locate empty tile
-    for(i = 0; i < mn; i++){
-      if(nums.get(i) == mn){
+    for(i = 0; i < m*n; i++){
+      if(nums.get(i) == m*n){
         iEmpty = i/m;
         jEmpty = i%m;
         break;
@@ -136,7 +126,7 @@ void shuffleBoard(){
     }
     
     // determine if shuffle is valid
-  } while(((inversions + iEmpty + jEmpty + mPn) & 1) != 0);
+  } while(((inversions + iEmpty + jEmpty + (m+n)) & 1) != 0);
   
   // copy nums to board
   for(i = 0; i < n; i++){
@@ -158,7 +148,7 @@ void drawBoard(){
   for(i = boardStart.y + tileSize/2; i < boardEnd.y; i += tileSize){
     jBoard = 0;
     for(j = boardStart.x + tileSize/2; j < boardEnd.x; j += tileSize){
-       if(board[iBoard][jBoard] != mn){ // regular tile
+       if(board[iBoard][jBoard] != m*n){ // regular tile
          fill(activeScheme.tile); // tile color
          square(j, i, tileSize);
          fill(activeScheme.nums); // number color
@@ -179,28 +169,28 @@ Move keyMove(){
     case 'w':
       if(iEmpty+1 >= n) break;
       board[iEmpty][jEmpty] = board[iEmpty+1][jEmpty];
-      board[iEmpty+1][jEmpty] = mn;
+      board[iEmpty+1][jEmpty] = m*n;
       iEmpty++;
       moves++;
       return Move.U;
     case 's':
       if(iEmpty-1 < 0) break;
       board[iEmpty][jEmpty] = board[iEmpty-1][jEmpty];
-      board[iEmpty-1][jEmpty] = mn;
+      board[iEmpty-1][jEmpty] = m*n;
       iEmpty--;
       moves++;
       return Move.D;
     case 'a':
       if(jEmpty+1 >= m) break;
       board[iEmpty][jEmpty] = board[iEmpty][jEmpty+1];
-      board[iEmpty][jEmpty+1] = mn;
+      board[iEmpty][jEmpty+1] = m*n;
       jEmpty++;
       moves++;
       return Move.L;
     case 'd':
       if(jEmpty-1 < 0) break;
       board[iEmpty][jEmpty] = board[iEmpty][jEmpty-1];
-      board[iEmpty][jEmpty-1] = mn;
+      board[iEmpty][jEmpty-1] = m*n;
       jEmpty--;
       moves++;
       return Move.R;
@@ -216,28 +206,28 @@ Move arrowKeyMove(){
     case UP:
       if(iEmpty+1 >= n) break;
       board[iEmpty][jEmpty] = board[iEmpty+1][jEmpty];
-      board[iEmpty+1][jEmpty] = mn;
+      board[iEmpty+1][jEmpty] = m*n;
       iEmpty++;
       moves++;
       return Move.U;
     case DOWN:
       if(iEmpty-1 < 0) break;
       board[iEmpty][jEmpty] = board[iEmpty-1][jEmpty];
-      board[iEmpty-1][jEmpty] = mn;
+      board[iEmpty-1][jEmpty] = m*n;
       iEmpty--;
       moves++;
       return Move.D;
     case LEFT:
       if(jEmpty+1 >= m) break;
       board[iEmpty][jEmpty] = board[iEmpty][jEmpty+1];
-      board[iEmpty][jEmpty+1] = mn;
+      board[iEmpty][jEmpty+1] = m*n;
       jEmpty++;
       moves++;
       return Move.L;
     case RIGHT:
       if(jEmpty-1 < 0) break;
       board[iEmpty][jEmpty] = board[iEmpty][jEmpty-1];
-      board[iEmpty][jEmpty-1] = mn;
+      board[iEmpty][jEmpty-1] = m*n;
       jEmpty--;
       moves++;
       return Move.R;
@@ -266,33 +256,33 @@ Move moveTile(){
     return Move.NONE;
   }
   // if empty tile is UP
-  if(i-1 >= 0 && board[i-1][j] == mn){
+  if(i-1 >= 0 && board[i-1][j] == m*n){
     board[i-1][j] = board[i][j];
-    board[i][j] = mn;
+    board[i][j] = m*n;
     iEmpty = i;
     moves++;
     return Move.U;
   }
   // if empty tile is DOWN
-  if(i+1 < n && board[i+1][j] == mn){
+  if(i+1 < n && board[i+1][j] == m*n){
     board[i+1][j] = board[i][j];
-    board[i][j] = mn;
+    board[i][j] = m*n;
     iEmpty = i;
     moves++;
     return Move.D;
   }
   // if empty tile is LEFT
-  if(j-1 >= 0 && board[i][j-1] == mn){
+  if(j-1 >= 0 && board[i][j-1] == m*n){
     board[i][j-1] = board[i][j];
-    board[i][j] = mn;
+    board[i][j] = m*n;
     jEmpty = j;
     moves++;
     return Move.L;
   }
   // if empty tile is RIGHT
-  if(j+1 < m && board[i][j+1] == mn){
+  if(j+1 < m && board[i][j+1] == m*n){
     board[i][j+1] = board[i][j];
-    board[i][j] = mn;
+    board[i][j] = m*n;
     jEmpty = j;
     moves++;
     return Move.R;

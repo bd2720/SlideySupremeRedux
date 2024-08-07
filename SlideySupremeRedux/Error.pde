@@ -53,7 +53,7 @@ boolean loadDefaultsSafe(){
     background(activeScheme.bg);
     // default resolution already hard-coded in size()
     buildJSONError(e, defaultsFileName, false);
-    state = State.ERROR;
+    setState(State.ERROR);
   }
   return false;
 }
@@ -64,7 +64,7 @@ boolean saveDefaultsSafe(){
     return true;
   } catch(Exception e){
     buildJSONError(e, defaultsFileName, true);
-    state = State.ERROR;
+    setState(State.ERROR);
   }
   return false;
 }
@@ -75,7 +75,7 @@ boolean loadStatsSafe(){
     return true;
   } catch(Exception e){
     buildJSONError(e, scoresFileName, false);
-    state = State.ERROR;
+    setState(State.ERROR);
   }
   return false;
 }
@@ -86,7 +86,7 @@ boolean saveStatsSafe(){
     return true;
   } catch(Exception e){
     buildJSONError(e, scoresFileName, true);
-    state = State.ERROR;
+    setState(State.ERROR);
   }
   return false;
 }
@@ -101,6 +101,7 @@ boolean saveDemoSafe(DemoBuilder db){
     return true;
   } catch(Exception e){
     buildJSONError(e, db.getDemoPath(), true);
+    setState(State.ERROR);
   }
   return false;
 }

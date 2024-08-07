@@ -10,6 +10,11 @@
 enum State { INIT, PREGAME, PLAY, SOLVED, RESIZE, PAUSED, INFO, ERROR, DEMO }
 State state; // initialized in setup()
 State pstate; // previous state, in case we want to restore last state
+// set state
+void setState(State s){
+   pstate = state;
+   state = s;
+}
 
 boolean pmousePressed; // mousePressed 1 frame ago
 boolean pkeyPressed; // keyPressed 1 frame ago
@@ -26,7 +31,8 @@ void updateIOVars(){ // called after each frame
 void setup(){
   size(800, 600);
   frameRate(60);
-  state = State.INIT;
+  pstate = State.INIT;
+  setState(State.INIT);
   initResolutions();
   initSchemes();
   if(!loadDefaultsSafe()) return;
@@ -60,10 +66,21 @@ void draw(){
       displayStatText();
       currMove = moveTile();
       if(currMove != Move.NONE){ // transition to PLAY
-        demo_builder.logInput(0, currMove);
-        tStart = System.currentTimeMillis();
-        pause_button.activateButton(); // pause button only active during play
-        state = State.PLAY;
+        tStart = System.currentTimeMillis(); //<>//
+        tElapsed = 0;
+        demo_builder.logInput(tElapsed, currMove);
+        // solved after 1 move
+        if(isSolved()){ // transition to SOLVED
+          if(!saveStatsSafe()) return;
+          if(beatTime){
+            if(!saveDemoSafe(demo_builder)) return; 
+          }
+          //pause_button.deactivateButton();
+          setState(State.SOLVED);
+        } else {
+          pause_button.activateButton(); // pause button only active during play
+          setState(State.PLAY);
+        }
       }
       pollAllButtons();
       break;
@@ -73,14 +90,17 @@ void draw(){
       displayStatText();
       tElapsed = System.currentTimeMillis() - tStart;
       currMove = moveTile();
-      if(currMove != Move.NONE) demo_builder.logInput(tElapsed, currMove);
-      if(isSolved()){ // transition to SOLVED
-        if(!saveStatsSafe()) return;
-        if(beatTime){
-          if(!saveDemoSafe(demo_builder)) return; 
+      if(currMove != Move.NONE){
+        demo_builder.logInput(tElapsed, currMove);
+        // only run isSolved() after a move is made
+        if(isSolved()){ // transition to SOLVED
+          if(!saveStatsSafe()) return;
+          if(beatTime){
+            if(!saveDemoSafe(demo_builder)) return; 
+          }
+          pause_button.deactivateButton();
+          setState(State.SOLVED);
         }
-        pause_button.deactivateButton();
-        state = State.SOLVED;
       }
       pollAllButtons();
       break;

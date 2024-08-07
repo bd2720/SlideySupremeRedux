@@ -5,7 +5,7 @@
     When a new best time is set, the demo will be saved.
     
     DemoBuilder: builds a demo, saves if new best.
-    DemoPlayer:  loads demo and handles playback.
+    DemoPlayer:  loads/reconstructs demo and handles playback.
 */
 
 /*
@@ -73,6 +73,8 @@ void initDemoBuilder(int currM, int currN){
   demo_builder = new DemoBuilder(currM, currN);
 }
 
+// emulates the main game loop with a demo
 class DemoPlayer {
   public DemoState demostate; // current state of the demo replay
+  public DemoState pDemostate; // prev. state of demo
 }

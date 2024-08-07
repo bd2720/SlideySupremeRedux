@@ -81,7 +81,7 @@ class ResetButton extends Button {
     tElapsed = 0;
     moves = 0;
     pause_button.deactivateButton();
-    state = State.PREGAME;
+    setState(State.PREGAME);
     return true;
   }
 }
@@ -103,8 +103,7 @@ class ResizeButton extends Button {
   }
   boolean buttonFunction(){
     inputTemp = "";
-    pstate = state; // save prev state, in case we need to restore
-    state = State.RESIZE;
+    setState(State.RESIZE);
     return true;
   }
 }
@@ -126,8 +125,7 @@ class PauseButton extends Button {
   }
   boolean buttonFunction(){
     pause_button.text = "Resume";
-    pstate = state;
-    state = State.PAUSED;
+    setState(State.PAUSED);
     return true;
   }
 }
@@ -211,8 +209,7 @@ class InfoButton extends Button {
   }
   boolean buttonFunction(){
     info_button.text = "Resume";
-    pstate = state;
-    state = State.INFO;
+    setState(State.INFO);
     return true;
   }
 }
