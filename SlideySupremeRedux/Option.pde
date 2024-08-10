@@ -63,6 +63,12 @@ void puzzleSize(){ // draws, parses menu info for the resize window
       initBoard();
       shuffleBoard();
       initDemoBuilder(m, n);
+      // update demo button
+      if(demo_builder.demoExists()){
+        demo_button.activateButton();
+      } else {
+        demo_button.deactivateButton();
+      }
       tElapsed = 0;
       moves = 0;
       pause_button.deactivateButton();

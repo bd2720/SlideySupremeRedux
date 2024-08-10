@@ -42,7 +42,6 @@ enum Move {
     return this.val; 
   }
 }
-Move currMove;               // move done on current frame
 
 // called in initBoard and after window is resized
 void sizeBoard(){

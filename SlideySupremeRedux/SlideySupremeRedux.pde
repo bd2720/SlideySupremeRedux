@@ -53,6 +53,10 @@ void setup(){
   theme_button.activateButton();
   window_button.activateButton();
   info_button.activateButton();
+  // only activate demo button if demo exists
+  if(demo_builder.demoExists()){
+    demo_button.activateButton();
+  }
   state = State.PREGAME;
   updateIOVars();
 }
@@ -64,16 +68,17 @@ void draw(){
       drawAllButtons();
       drawBoard();
       displayStatText();
-      currMove = moveTile();
+      Move currMove = moveTile();
       if(currMove != Move.NONE){ // transition to PLAY
-        tStart = System.currentTimeMillis(); //<>//
+        tStart = System.currentTimeMillis();
         tElapsed = 0;
         demo_builder.logInput(tElapsed, currMove);
         // solved after 1 move
         if(isSolved()){ // transition to SOLVED
           if(!saveStatsSafe()) return;
           if(beatTime){
-            if(!saveDemoSafe(demo_builder)) return; 
+            if(!saveDemoSafe(demo_builder)) return;
+            demo_button.activateButton(); // activate demo button
           }
           //pause_button.deactivateButton();
           setState(State.SOLVED);
@@ -96,7 +101,9 @@ void draw(){
         if(isSolved()){ // transition to SOLVED
           if(!saveStatsSafe()) return;
           if(beatTime){
+            // attempt to save demo if new best time
             if(!saveDemoSafe(demo_builder)) return; 
+            demo_button.activateButton(); // activate demo button
           }
           pause_button.deactivateButton();
           setState(State.SOLVED);

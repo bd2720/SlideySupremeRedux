@@ -90,17 +90,24 @@ boolean saveStatsSafe(){
   }
   return false;
 }
-
-boolean loadDemoSafe(){
-  return false;
-}
-
-boolean saveDemoSafe(DemoBuilder db){
+// could pass DemoBuilder OR DemoPlayer
+boolean loadDemoSafe(DemoArchiver demoObj){
   try {
-    db.saveDemoDB();
+    demoObj.loadDemo(); //<>//
     return true;
   } catch(Exception e){
-    buildJSONError(e, db.getDemoPath(), true);
+    buildJSONError(e, demoObj.getDemoPath(), false);
+    setState(State.ERROR);
+  }
+  return false;
+}
+// could pass DemoBuilder OR DemoPlayer
+boolean saveDemoSafe(DemoArchiver demoObj){
+  try {
+    demoObj.saveDemo();
+    return true;
+  } catch(Exception e){
+    buildJSONError(e, demoObj.getDemoPath(), true);
     setState(State.ERROR);
   }
   return false;
