@@ -110,18 +110,72 @@ class DemoPlayer extends DemoArchiver {
   private DemoState demostate; // current state of the demo replay
   private DemoState pDemostate; // prev. state of demo
   
-  private long movesLeft; // current move number
+  private int totalMoves; // current move number
   private long finalMoveTime; // time of final move (ms)
   
   public DemoPlayer(int currM, int currN) {
     super(currM, currN); // pass m and n to DemoArchiver
     demostate = DemoState.INIT;
     pDemostate = DemoState.INIT;
-    movesLeft = 0;
+  }
+  // change demostate
+  public void setDemoState(DemoState dstate){
+    this.pDemostate = demostate;
+    this.demostate = dstate;
   }
   
-  // fill board[][] with original state of demo board
-  public boolean reconstructDemo(){
-    return false;
+  // check if element of tempInputs is correctly formatted
+  private boolean validateInput(JSONObject input){
+    try {
+      int moveVal = input.getInt("m");
+      if(moveFromInt(moveVal) == Move.NONE) return false;
+      long moveTime = input.getLong("t");
+      if(moveTime < 0) return false;
+    } catch(Exception e){
+      return false;
+    }
+    return true;
   }
+  
+  /* fill board[][] with original state of demo board
+     init. movesLeft and finalMoveTime
+     returns true if demo is valid
+     called in DemoState.INIT, and XXX-->DemoState.SETUP
+  */ 
+  public boolean reconstructBoard(){
+    this.totalMoves = tempInputs.size(); // init totalMoves
+    if(totalMoves == 0) return false;
+    // init. board[][] to solved
+    solveBoard();
+    // loop backwards over inputs
+    JSONObject input;
+    Move move;
+    long moveTime = 0;
+    for(int inputID = totalMoves-1; inputID >= 0; inputID--){
+      // get current input
+      input = tempInputs.getJSONObject(inputID);
+      // ensure input is valid
+      if(!validateInput(input)) return false;
+      // apply opposite move to board
+      move = moveFromInt(input.getInt("m")).opposite();
+      executeMove(move);
+      // save timestamp
+      moveTime = input.getLong("t");
+    }
+    this.finalMoveTime = moveTime; // init. finalMoveTime
+    return true;
+  }
+  
+  // execute part of the demo loop consistent with demostate
+  public void execStateFunction(){
+    drawBoard();
+  }
+}
+
+// global object instance
+DemoPlayer demo_player;
+
+// global initializer
+void initDemoPlayer(int currM, int currN){
+  demo_player = new DemoPlayer(currM, currN);
 }

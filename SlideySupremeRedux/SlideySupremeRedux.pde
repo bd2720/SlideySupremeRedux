@@ -151,6 +151,9 @@ void draw(){
         if(!window_button.buttonFunction()) return;
       }
       break;
+    case DEMO:
+      demo_player.execStateFunction();
+      break;
     case ERROR:
       displayJSONError();
       noLoop();

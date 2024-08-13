@@ -230,7 +230,14 @@ class DemoButton extends Button {
     bHeight = height/24;
   }
   boolean buttonFunction(){
-    // load demo
+    // init. demo_player
+    initDemoPlayer(m, n);
+    // attempt to load demo
+    if(!loadDemoSafe(demo_player)) return false;
+    // attempt to reconstruct board
+    if(!demo_player.reconstructBoard()) return false;
+    setState(State.DEMO);
+    demo_player.setDemoState(DemoState.SETUP);
     return true;
   }
 }

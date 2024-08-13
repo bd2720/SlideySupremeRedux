@@ -38,9 +38,39 @@ enum Move {
   private Move(int v){
     this.val = v; 
   }
+  // extract int. value
   public int toInt(){
     return this.val; 
   }
+  // return the move pointing the opposite dir.
+  public Move opposite(){
+    switch(this){
+      case U:
+        return D;
+      case D:
+        return U;
+      case L:
+        return R;
+      case R:
+        return L;
+      default:
+        return NONE;
+    }
+  }
+}
+// Move from integer (returns NONE if not U,D,L,R)
+Move moveFromInt(int num){
+  switch(num){
+    case 1:
+      return Move.U;
+    case 2:
+      return Move.D;
+    case 3:
+      return Move.L;
+    case 4:
+      return Move.R;
+  }
+  return Move.NONE;
 }
 
 // called in initBoard and after window is resized
@@ -85,6 +115,18 @@ boolean isSolved(){
     }
   }
   return true;
+}
+
+// fill board with sequential ints (solve)
+void solveBoard(){
+  int tile = 1;
+  for(int i = 0; i < n; i++){
+    for(int j = 0; j < m; j++){
+      board[i][j] = tile++;
+    }
+  }
+  iEmpty = n-1;
+  jEmpty = m-1;
 }
 
 void shuffleBoard(){
@@ -287,4 +329,38 @@ Move moveTile(){
     return Move.R;
   }
   return Move.NONE;
+}
+
+// executes move on the board
+// DOES NOT UPDATE "moves" counter
+boolean executeMove(Move move){
+  switch(move){
+    case U:
+      if(iEmpty+1 >= n) break;
+      board[iEmpty][jEmpty] = board[iEmpty+1][jEmpty];
+      board[iEmpty+1][jEmpty] = m*n;
+      iEmpty++;
+      return true;
+    case D:
+      if(iEmpty-1 < 0) break;
+      board[iEmpty][jEmpty] = board[iEmpty-1][jEmpty];
+      board[iEmpty-1][jEmpty] = m*n;
+      iEmpty--;
+      return true;
+    case L:
+      if(jEmpty+1 >= m) break;
+      board[iEmpty][jEmpty] = board[iEmpty][jEmpty+1];
+      board[iEmpty][jEmpty+1] = m*n;
+      jEmpty++;
+      return true;
+    case R:
+      if(jEmpty-1 < 0) break;
+      board[iEmpty][jEmpty] = board[iEmpty][jEmpty-1];
+      board[iEmpty][jEmpty-1] = m*n;
+      jEmpty--;
+      return true;
+    default:
+      break;
+  }
+  return false;
 }
