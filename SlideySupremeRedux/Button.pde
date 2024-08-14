@@ -69,7 +69,8 @@ class ResetButton extends Button {
     this.buttonSize();
   }
   void buttonSize(){
-    textSize = height/16;
+    // smaller text if subtext exists
+    textSize = subtext.isEmpty() ? height/16 : height/19;
     bX = 7*width/8;
     bY = height/2;
     bWidth = width/6;
@@ -107,7 +108,7 @@ class ResizeButton extends Button {
     return true;
   }
 }
-
+// in DEMO MODE, functions as play/stop
 class PauseButton extends Button {
   PauseButton(){ 
     text = "Pause";
@@ -117,13 +118,19 @@ class PauseButton extends Button {
     this.buttonSize();
   }
   void buttonSize(){
-    textSize = height/16;
+    // smaller text if subtext exists
+    textSize = subtext.isEmpty() ? height/16 : height/19;
     bX = 5*width/8;
     bY = height/2;
     bWidth = width/6;
     bHeight = height/8; 
   }
   boolean buttonFunction(){
+    // Demo Mode (state == State.Demo)
+    if(state == State.DEMO){
+      return true;
+    }
+    // Normal Mode (state != State.DEMO)
     pause_button.text = "Resume";
     setState(State.PAUSED);
     return true;
@@ -230,13 +237,59 @@ class DemoButton extends Button {
     bHeight = height/24;
   }
   boolean buttonFunction(){
+    /* TRANSITION OUT OF DEMO MODE (GO TO PREGAME) */
+    if(state == State.DEMO){
+      // take care of PREGAME transition stuff
+      setState(State.PREGAME);
+      shuffleBoard();
+      initDemoBuilder(m, n);
+      tElapsed = 0;
+      moves = 0;
+      // deal with buttons
+      pause_button.deactivateButton();
+      reset_button.activateButton();
+      info_button.activateButton();
+      resize_button.activateButton();
+      // only activate demo button if demo exists
+      if(demo_builder.demoExists()){
+        demo_button.activateButton();
+      }
+   
+      pause_button.text = "Pause";
+      pause_button.subtext = reset_button.subtext = "";
+      pause_button.buttonSize();
+      reset_button.buttonSize();
+      demo_button.text = "View Demo";
+      return true;
+    }
+    /* TRANSITION INTO DEMO MODE */
     // init. demo_player
     initDemoPlayer(m, n);
+    // change state and demostate
+    setState(State.DEMO);
+    demo_player.setDemoState(DemoState.INIT);
     // attempt to load demo
     if(!loadDemoSafe(demo_player)) return false;
     // attempt to reconstruct board
     if(!demo_player.reconstructBoard()) return false;
-    setState(State.DEMO);
+    // change demo_button subtext
+    demo_button.text = "Exit Demo";
+    // activate pause (play demo) button
+    pause_button.activateButton();
+    // deactivate info + size + reset buttons
+    info_button.deactivateButton();
+    resize_button.deactivateButton();
+    reset_button.deactivateButton();
+    // edit button text to describe demo-mode functionality
+    pause_button.text = "Play";
+    pause_button.subtext = "Demo";
+    reset_button.subtext = "Demo";
+    // resize buttons that previously did not have subtext
+    pause_button.buttonSize();
+    reset_button.buttonSize();
+    // zero moves and timer
+    moves = 0;
+    tElapsed = 0;
     demo_player.setDemoState(DemoState.SETUP);
     return true;
   }

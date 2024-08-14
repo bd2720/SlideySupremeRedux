@@ -15,6 +15,12 @@ void setState(State s){
    pstate = state;
    state = s;
 }
+// restore state to pstate
+void restoreState(){
+  State tstate = pstate;
+  pstate = state;
+  state = tstate;
+}
 
 boolean pmousePressed; // mousePressed 1 frame ago
 boolean pkeyPressed; // keyPressed 1 frame ago
@@ -57,7 +63,7 @@ void setup(){
   if(demo_builder.demoExists()){
     demo_button.activateButton();
   }
-  state = State.PREGAME;
+  setState(State.PREGAME);
   updateIOVars();
 }
 

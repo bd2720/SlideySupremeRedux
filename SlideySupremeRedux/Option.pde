@@ -9,6 +9,13 @@ String inputTemp; // buffer for user input
 int newM;
 int newN;
 
+void darkenScreen(){
+  fill(0, 127);
+  noStroke();
+  rectMode(LEFT);
+  rect(0, 0, width, height);
+}
+
 // called during RESIZE
 void puzzleSize(){ // draws, parses menu info for the resize window
   // "PAUSED"
@@ -17,10 +24,7 @@ void puzzleSize(){ // draws, parses menu info for the resize window
   textAlign(CENTER, CENTER);
   text("PAUSED", width/4, height/4);
   // darken screen
-  fill(0, 127);
-  noStroke();
-  rectMode(LEFT);
-  rect(0, 0, width, height);
+  darkenScreen();
   
   // draw prompt box
   stroke(activeScheme.board);
@@ -41,7 +45,7 @@ void puzzleSize(){ // draws, parses menu info for the resize window
     case RETURN:
       if(inputTemp.isEmpty()){ // if prompt empty, resume
          tStart = System.currentTimeMillis() - tElapsed;
-         state = pstate;
+         restoreState();
          return;
       }
       xIndex = inputTemp.indexOf("x");
@@ -53,7 +57,7 @@ void puzzleSize(){ // draws, parses menu info for the resize window
       if(newN < minDim || newN > maxDim) break;
       if(newN == n && newM == m){ // if dims are the same, resume
          tStart = System.currentTimeMillis() - tElapsed;
-         state = pstate;
+         restoreState();
          return;
       }
       m = newM;
@@ -72,7 +76,7 @@ void puzzleSize(){ // draws, parses menu info for the resize window
       tElapsed = 0;
       moves = 0;
       pause_button.deactivateButton();
-      state = State.PREGAME;
+      setState(State.PREGAME);
       break;
     case BACKSPACE:
       if(inputTemp.length() == 0) break;
@@ -97,10 +101,7 @@ void puzzleSize(){ // draws, parses menu info for the resize window
 // called during the PAUSED state.
 void paused(){
   // darken screen
-  fill(0, 127);
-  noStroke();
-  rectMode(LEFT);
-  rect(0, 0, width, height);
+  darkenScreen();
   // "PAUSED"
   fill(activeScheme.text);
   textSize(height/12);
@@ -111,7 +112,7 @@ void paused(){
   // back to play
   pause_button.text = "Pause";
   tStart = System.currentTimeMillis() - tElapsed;
-  state = State.PLAY;
+  setState(State.PLAY);
 }
 
 String infoString;
@@ -154,16 +155,14 @@ void initInfoString(){
 // called during INFO state
 void info(){
   // darken screen
-  fill(0, 127);
-  noStroke();
-  rectMode(LEFT);
-  rect(0, 0, width, height);
+  darkenScreen();
   // draw info button
   info_button.drawButton();
   // draw info box, based on aspect ratio
   stroke(activeScheme.board);
   fill(activeScheme.tile);
   rectMode(CENTER);
+  // detect aspect ratio
   if(width/(float)height > 1.5){ // 16:9
     rect(width/4, height/2, 9*width/20, 9*height/10);
   } else { // 4:3
@@ -177,6 +176,6 @@ void info(){
   if(info_button.pollButton()){
     info_button.text = "Info";
     tStart = System.currentTimeMillis() - tElapsed;
-    state = pstate;
+    restoreState();
   }
 }

@@ -103,7 +103,7 @@ void initDemoBuilder(int currM, int currN){
 }
 
 // sub-states for use by DemoPlayer
-enum DemoState { INIT, SETUP, PLAY, FINISH, ESCAPE } 
+enum DemoState { INIT, SETUP, PLAY, FINISH, ESCAPE }
 
 // emulates the main game loop with a demo
 class DemoPlayer extends DemoArchiver {
@@ -168,7 +168,19 @@ class DemoPlayer extends DemoArchiver {
   
   // execute part of the demo loop consistent with demostate
   public void execStateFunction(){
-    drawBoard();
+    //background has already been drawn
+    switch(this.demostate){
+       case SETUP: // after INIT, before PLAY
+         drawBoard();
+         drawAllButtons();
+         displayStatText();
+         // check if play button has been pressed
+         
+         pollAllButtons();
+         break;
+       default:
+         break;
+    }
   }
 }
 
