@@ -93,7 +93,7 @@ boolean saveStatsSafe(){
 // could pass DemoBuilder OR DemoPlayer
 boolean loadDemoSafe(DemoArchiver demoObj){
   try {
-    demoObj.loadDemo(); //<>//
+    demoObj.loadDemo();
     return true;
   } catch(Exception e){
     buildJSONError(e, demoObj.getDemoPath(), false);

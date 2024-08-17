@@ -103,25 +103,37 @@ void initDemoBuilder(int currM, int currN){
 }
 
 // sub-states for use by DemoPlayer
-enum DemoState { INIT, SETUP, PLAY, FINISH, ESCAPE }
+enum DemoState { INIT, SETUP, PLAY, PAUSED, FINISH, ESCAPE }
 
 // emulates the main game loop with a demo
 class DemoPlayer extends DemoArchiver {
   private DemoState demostate; // current state of the demo replay
   private DemoState pDemostate; // prev. state of demo
   
-  private int totalMoves; // current move number
+  private int currPlaybackMove; // current move number
   private long finalMoveTime; // time of final move (ms)
+  private int totalMoves; // total number of moves
+  
+  private boolean playing; // true if demo playback is currently active
+  private long startTime; // staring time of playback (ms)
+  private long currTime; // current time (time elapsed) of playback
   
   public DemoPlayer(int currM, int currN) {
     super(currM, currN); // pass m and n to DemoArchiver
     demostate = DemoState.INIT;
     pDemostate = DemoState.INIT;
+    playing = false;
   }
   // change demostate
   public void setDemoState(DemoState dstate){
     this.pDemostate = demostate;
     this.demostate = dstate;
+  }
+  public boolean isPlaying(){
+    return this.playing; 
+  }
+  public void setIsPlaying(boolean b){
+    this.playing = b; 
   }
   
   // check if element of tempInputs is correctly formatted
@@ -138,12 +150,13 @@ class DemoPlayer extends DemoArchiver {
   }
   
   /* fill board[][] with original state of demo board
-     init. movesLeft and finalMoveTime
+     init. finalNumMoves and finalMoveTime
      returns true if demo is valid
      called in DemoState.INIT, and XXX-->DemoState.SETUP
   */ 
   public boolean reconstructBoard(){
     this.totalMoves = tempInputs.size(); // init totalMoves
+    this.finalMoveTime = tempInputs.getJSONObject(totalMoves-1).getLong("t");
     if(totalMoves == 0) return false;
     // init. board[][] to solved
     solveBoard();
@@ -161,9 +174,42 @@ class DemoPlayer extends DemoArchiver {
       executeMove(move);
       // save timestamp
       moveTime = input.getLong("t");
-    }
-    this.finalMoveTime = moveTime; // init. finalMoveTime
+    } //<>//
     return true;
+  }
+  
+  // take current timestamp
+  public void beginPlayback() {
+    // init. starting time
+    this.startTime = System.currentTimeMillis();
+    // init. moves to 0
+    this.currPlaybackMove = 0;
+  }
+  
+  // plays back move(s) that occurred in the current 1/fps ms window
+  public void playback() {
+    // take current time
+    this.currTime = System.currentTimeMillis() - this.startTime;
+    // replay more moves until timestamp exceeds currTime
+    while(currPlaybackMove < this.totalMoves){
+      JSONObject input = this.tempInputs.getJSONObject(currPlaybackMove);
+      long inputTime = input.getLong("t");
+      // stop "frame" of playback if time exceeds currTime
+      if(inputTime > currTime) break;
+      // otherwise, execute move
+      Move inputMove = moveFromInt(input.getInt("m"));
+      executeMove(inputMove);
+      // increment current move number
+      currPlaybackMove++;
+    }
+    // update GLOBAL tElapsed, moves
+    moves = this.currPlaybackMove;
+    // cap global time at demo's final move time
+    if(this.currTime > this.finalMoveTime){
+      tElapsed = this.finalMoveTime; 
+    } else {
+      tElapsed = this.currTime;
+    }
   }
   
   // execute part of the demo loop consistent with demostate
@@ -174,9 +220,34 @@ class DemoPlayer extends DemoArchiver {
          drawBoard();
          drawAllButtons();
          displayStatText();
-         // check if play button has been pressed
-         
-         pollAllButtons();
+         // exit demo if exit demo pressed
+         if(demo_button.pollButton()) {
+           demo_button.buttonFunction();
+           return;
+         }
+         // transition to DemoState.PLAY if pause button pressed 
+         if(pause_button.pollButton()){
+           pause_button.buttonFunction();
+           return;
+         }
+         break;
+       case PLAY:
+         drawBoard();
+         drawAllButtons();
+         displayStatText();
+         // playback for current "frame"
+         this.playback();
+         // if demo finished, transition to DemoState.FINISH
+         if(this.currPlaybackMove == this.totalMoves) {
+           this.setDemoState(DemoState.FINISH);
+           return;
+         }
+         break;
+       case FINISH:
+         drawBoard();
+         drawAllButtons();
+         displayStatText();
+         displayDemoText();
          break;
        default:
          break;

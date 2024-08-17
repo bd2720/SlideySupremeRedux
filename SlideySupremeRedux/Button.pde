@@ -128,6 +128,13 @@ class PauseButton extends Button {
   boolean buttonFunction(){
     // Demo Mode (state == State.Demo)
     if(state == State.DEMO){
+      // if demo paused, begin playback
+      if(!demo_player.isPlaying()) {
+        // TODO: handle 0.000 case
+        demo_player.beginPlayback();
+        demo_player.setDemoState(DemoState.PLAY);
+        return true;
+      }
       return true;
     }
     // Normal Mode (state != State.DEMO)

@@ -75,6 +75,14 @@ void displayWinText(){
   text("You Win!", 5*width/6, 3*height/8 - 10);
 }
 
+// called in DemoState.FINISH, when state == State.DEMO
+void displayDemoText(){
+  textSize(height/15);
+  textAlign(CENTER, CENTER);
+  fill(activeScheme.text);
+  text("Demo End.", 5*width/6, 3*height/8 - 10);
+}
+
 // searches for the current n and m in the (non-null) scores JSONArray
 int getScoreIndex(int currM, int currN){
   JSONObject currScore;
