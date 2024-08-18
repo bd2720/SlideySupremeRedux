@@ -136,12 +136,7 @@ void draw(){
       // theme and window should work here
       theme_button.drawButton();
       window_button.drawButton();
-      if(theme_button.pollButton()){
-        if(!theme_button.buttonFunction()) return;
-      }
-      if(window_button.pollButton()){
-        if(!window_button.buttonFunction()) return;
-      }
+      pollCosmeticButtons();
       break;
     case INFO: // display info, keys + themes
       drawAllButtons();
@@ -150,12 +145,7 @@ void draw(){
       // theme and window should work here
       theme_button.drawButton();
       window_button.drawButton();
-      if(theme_button.pollButton()){
-        if(!theme_button.buttonFunction()) return;
-      }
-      if(window_button.pollButton()){
-        if(!window_button.buttonFunction()) return;
-      }
+      pollCosmeticButtons();
       break;
     case DEMO:
       demo_player.execStateFunction();

@@ -114,7 +114,7 @@ void loadStats(){
   JSONObject currScore = scores.getJSONObject(scoreID);
   try {
   bestTime = currScore.getLong("time");
-  if(bestTime <= 0){
+  if(bestTime < 0){
     bestTime = Long.MAX_VALUE;
     bestTimeStr = "";
   } else {

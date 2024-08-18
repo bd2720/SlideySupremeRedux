@@ -103,12 +103,14 @@ void initDemoBuilder(int currM, int currN){
 }
 
 // sub-states for use by DemoPlayer
-enum DemoState { INIT, SETUP, PLAY, PAUSED, FINISH, ESCAPE }
+enum DemoState { INIT, SETUP, PLAY, PAUSED, FINISH }
 
 // emulates the main game loop with a demo
 class DemoPlayer extends DemoArchiver {
   private DemoState demostate; // current state of the demo replay
   private DemoState pDemostate; // prev. state of demo
+  
+  private int[][] initialBoard; // original state of board
   
   private int currPlaybackMove; // current move number
   private long finalMoveTime; // time of final move (ms)
@@ -123,18 +125,29 @@ class DemoPlayer extends DemoArchiver {
     demostate = DemoState.INIT;
     pDemostate = DemoState.INIT;
     playing = false;
+    // allocate initialBoard
+    this.initialBoard = new int[currN][currM];
   }
   // change demostate
   public void setDemoState(DemoState dstate){
     this.pDemostate = demostate;
     this.demostate = dstate;
   }
+  public DemoState getDemoState(){
+    return this.demostate; 
+  }
+  
   public boolean isPlaying(){
     return this.playing; 
   }
   public void setIsPlaying(boolean b){
     this.playing = b; 
   }
+  // public wrapper to copy to global board
+  public void copyToBoardDP(){
+    copyToBoard(this.initialBoard); 
+  }
+  
   
   // check if element of tempInputs is correctly formatted
   private boolean validateInput(JSONObject input){
@@ -156,14 +169,13 @@ class DemoPlayer extends DemoArchiver {
   */ 
   public boolean reconstructBoard(){
     this.totalMoves = tempInputs.size(); // init totalMoves
-    this.finalMoveTime = tempInputs.getJSONObject(totalMoves-1).getLong("t");
     if(totalMoves == 0) return false;
-    // init. board[][] to solved
-    solveBoard();
+    this.finalMoveTime = tempInputs.getJSONObject(totalMoves-1).getLong("t");
+    // init. initialBoard[][] to solved
+    solveBoard(initialBoard);
     // loop backwards over inputs
     JSONObject input;
     Move move;
-    long moveTime = 0;
     for(int inputID = totalMoves-1; inputID >= 0; inputID--){
       // get current input
       input = tempInputs.getJSONObject(inputID);
@@ -171,14 +183,15 @@ class DemoPlayer extends DemoArchiver {
       if(!validateInput(input)) return false;
       // apply opposite move to board
       move = moveFromInt(input.getInt("m")).opposite();
-      executeMove(move);
-      // save timestamp
-      moveTime = input.getLong("t");
-    } //<>//
+      // execute move on the GLOBAL board
+      executeMove(move, initialBoard);
+    }
+    // copy initialBoard to board
+    copyToBoard(this.initialBoard);
     return true;
   }
   
-  // take current timestamp
+  // called before beginning playback
   public void beginPlayback() {
     // init. starting time
     this.startTime = System.currentTimeMillis();
@@ -198,7 +211,7 @@ class DemoPlayer extends DemoArchiver {
       if(inputTime > currTime) break;
       // otherwise, execute move
       Move inputMove = moveFromInt(input.getInt("m"));
-      executeMove(inputMove);
+      executeMove(inputMove, board);
       // increment current move number
       currPlaybackMove++;
     }
@@ -215,43 +228,113 @@ class DemoPlayer extends DemoArchiver {
   // execute part of the demo loop consistent with demostate
   public void execStateFunction(){
     //background has already been drawn
+    drawBoard();
+    drawAllButtons();
+    displayStatText();
     switch(this.demostate){
-       case SETUP: // after INIT, before PLAY
-         drawBoard();
-         drawAllButtons();
-         displayStatText();
-         // exit demo if exit demo pressed
-         if(demo_button.pollButton()) {
-           demo_button.buttonFunction();
-           return;
-         }
-         // transition to DemoState.PLAY if pause button pressed 
-         if(pause_button.pollButton()){
-           pause_button.buttonFunction();
-           return;
-         }
-         break;
-       case PLAY:
-         drawBoard();
-         drawAllButtons();
-         displayStatText();
-         // playback for current "frame"
-         this.playback();
-         // if demo finished, transition to DemoState.FINISH
-         if(this.currPlaybackMove == this.totalMoves) {
-           this.setDemoState(DemoState.FINISH);
-           return;
-         }
-         break;
-       case FINISH:
-         drawBoard();
-         drawAllButtons();
-         displayStatText();
-         displayDemoText();
-         break;
-       default:
-         break;
+      case SETUP: // after INIT, before PLAY
+        // exit demo if exit demo pressed
+        if(demo_button.pollButton()) {
+          demo_button.buttonFunction();
+          return;
+        }
+        // transition to DemoState.PLAY if pause button pressed 
+        if(pause_button.pollButton()){
+          demo_player.setDemoState(DemoState.PLAY);
+          pause_button.text = "Pause";
+          // activate reset button
+          reset_button.activateButton();
+          this.beginPlayback();
+          return;
+        }
+        break;
+      case PLAY:
+        // exit demo if exit demo pressed
+        if(demo_button.pollButton()) {
+          demo_button.buttonFunction();
+          return;
+        }
+        // if pausing, transition to paused
+        if(pause_button.pollButton()){
+          pause_button.text = "Resume";
+          this.setDemoState(DemoState.PAUSED); 
+          return;
+        }
+        // if reset button is pressed, back to setup
+        if(reset_button.pollButton()){
+          reset_button.deactivateButton();
+          pause_button.text = "Play";
+          // zero moves and timer
+          moves = 0;
+          tElapsed = 0;
+          // copy demo's initialBoard to global board
+          copyToBoardDP();
+          demo_player.setDemoState(DemoState.SETUP);
+          return;
+        }
+        // playback for current "frame"
+        this.playback();
+        // if demo finished, transition to DemoState.FINISH
+        if(this.currPlaybackMove == this.totalMoves) {
+          this.setDemoState(DemoState.FINISH);
+          pause_button.text = "Play";
+          pause_button.deactivateButton();
+          return;
+        }
+        break;
+      case FINISH:
+        displayDemoText();
+        // exit demo if exit demo pressed
+        if(demo_button.pollButton()) {
+          demo_button.buttonFunction();
+          return;
+        }
+        // if reset pressed, back to setup!
+        if(reset_button.pollButton()){
+          pause_button.activateButton();
+          reset_button.deactivateButton();
+          pause_button.text = "Play";
+          // zero moves and timer
+          moves = 0;
+          tElapsed = 0;
+          // copy demo's initialBoard to global board
+          copyToBoardDP();
+          demo_player.setDemoState(DemoState.SETUP);
+          return;
+        }
+        break;
+      case PAUSED:
+        // exit demo if exit demo pressed
+        if(demo_button.pollButton()) {
+          demo_button.buttonFunction();
+          return;
+        }
+        // unpause
+        if(pause_button.pollButton()) {
+          // adjust time elapsed
+          startTime = System.currentTimeMillis() - currTime;
+          pause_button.text = "Pause";
+          demo_player.setDemoState(DemoState.PLAY);
+          return;
+        }
+        // if reset pressed, back to setup!
+        if(reset_button.pollButton()){
+          pause_button.activateButton();
+          reset_button.deactivateButton();
+          pause_button.text = "Play";
+          // zero moves and timer
+          moves = 0;
+          tElapsed = 0;
+          // copy demo's initialBoard to global board
+          copyToBoardDP();
+          demo_player.setDemoState(DemoState.SETUP);
+          return;
+        }
+      default:
+        break;
     }
+    // poll theme and window buttons
+    pollCosmeticButtons();
   }
 }
 

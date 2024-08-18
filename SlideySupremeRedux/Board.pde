@@ -93,6 +93,20 @@ void initBoard(){
   moves = 0;
 }
 
+// copy to board arr.
+// for use in reconstructDemo(), Demo.pde
+void copyToBoard(int[][] srcBoard){
+  for(int i = 0; i < n; i++){
+    for(int j = 0; j < m; j++){
+      if(srcBoard[i][j] == m*n){
+        iEmpty = i;
+        jEmpty = j;
+      }
+      board[i][j] = srcBoard[i][j];
+    }
+  }
+}
+
 int countInversions(IntList nums){
   int inversions = 0;
   for(int i = 0; i < nums.size(); i++){
@@ -118,11 +132,11 @@ boolean isSolved(){
 }
 
 // fill board with sequential ints (solve)
-void solveBoard(){
+void solveBoard(int[][] destBoard){
   int tile = 1;
   for(int i = 0; i < n; i++){
     for(int j = 0; j < m; j++){
-      board[i][j] = tile++;
+      destBoard[i][j] = tile++;
     }
   }
   iEmpty = n-1;
@@ -333,30 +347,30 @@ Move moveTile(){
 
 // executes move on the board
 // DOES NOT UPDATE "moves" counter
-boolean executeMove(Move move){
+boolean executeMove(Move move, int[][] destBoard){
   switch(move){
     case U:
       if(iEmpty+1 >= n) break;
-      board[iEmpty][jEmpty] = board[iEmpty+1][jEmpty];
-      board[iEmpty+1][jEmpty] = m*n;
+      destBoard[iEmpty][jEmpty] = destBoard[iEmpty+1][jEmpty];
+      destBoard[iEmpty+1][jEmpty] = m*n;
       iEmpty++;
       return true;
     case D:
       if(iEmpty-1 < 0) break;
-      board[iEmpty][jEmpty] = board[iEmpty-1][jEmpty];
-      board[iEmpty-1][jEmpty] = m*n;
+      destBoard[iEmpty][jEmpty] = destBoard[iEmpty-1][jEmpty];
+      destBoard[iEmpty-1][jEmpty] = m*n;
       iEmpty--;
       return true;
     case L:
       if(jEmpty+1 >= m) break;
-      board[iEmpty][jEmpty] = board[iEmpty][jEmpty+1];
-      board[iEmpty][jEmpty+1] = m*n;
+      destBoard[iEmpty][jEmpty] = destBoard[iEmpty][jEmpty+1];
+      destBoard[iEmpty][jEmpty+1] = m*n;
       jEmpty++;
       return true;
     case R:
       if(jEmpty-1 < 0) break;
-      board[iEmpty][jEmpty] = board[iEmpty][jEmpty-1];
-      board[iEmpty][jEmpty-1] = m*n;
+      destBoard[iEmpty][jEmpty] = destBoard[iEmpty][jEmpty-1];
+      destBoard[iEmpty][jEmpty-1] = m*n;
       jEmpty--;
       return true;
     default:

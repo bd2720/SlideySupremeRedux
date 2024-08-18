@@ -126,19 +126,7 @@ class PauseButton extends Button {
     bHeight = height/8; 
   }
   boolean buttonFunction(){
-    // Demo Mode (state == State.Demo)
-    if(state == State.DEMO){
-      // if demo paused, begin playback
-      if(!demo_player.isPlaying()) {
-        // TODO: handle 0.000 case
-        demo_player.beginPlayback();
-        demo_player.setDemoState(DemoState.PLAY);
-        return true;
-      }
-      return true;
-    }
-    // Normal Mode (state != State.DEMO)
-    pause_button.text = "Resume";
+    this.text = "Resume";
     setState(State.PAUSED);
     return true;
   }
@@ -297,6 +285,8 @@ class DemoButton extends Button {
     // zero moves and timer
     moves = 0;
     tElapsed = 0;
+    // copy demo's initialBoard to global board
+    demo_player.copyToBoardDP();
     demo_player.setDemoState(DemoState.SETUP);
     return true;
   }
@@ -360,5 +350,15 @@ void pollAllButtons(){
 void sizeAllButtons(){
   for(int i = 0; i < buttons.size(); i++){
     buttons.get(i).buttonSize();
+  }
+}
+
+// function specifically to poll cosmetic buttons (window and theme)
+void pollCosmeticButtons(){
+  if(window_button.pollButton()){
+    window_button.buttonFunction(); 
+  }
+  if(theme_button.pollButton()){
+     theme_button.buttonFunction();
   }
 }
