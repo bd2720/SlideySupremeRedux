@@ -9,6 +9,7 @@
     MINT    : Low intensity greens.
     EARTH   : Dark brown, green and blue.
     MAGMA   : Dark and hot colors.
+    AUTUMN  : Warm Fall greens, yellows and browns.
 */
 
 String colorSchemeName; // color scheme
@@ -55,6 +56,7 @@ void initSchemes(){
   schemes.add(new Scheme("MINT", #536359, #9bc7ba, #93adac, #defff5, #defff5, #a3c4ba)); // muted greens
   schemes.add(new Scheme("EARTH", #4a382c, #5e788f, #405669, #819cb5, #afc4a5, #708267)); // blue, green and brown
   schemes.add(new Scheme("MAGMA", #141313, #6e1904, #c74204, #000000, #ffaa4f, #b89469)); // dark and hot colors
+  schemes.add(new Scheme("AUTUMN", #772f1a, #f58549, #0f0f0f, #eec170, #eec170, #877c36));
 }
 
 /*

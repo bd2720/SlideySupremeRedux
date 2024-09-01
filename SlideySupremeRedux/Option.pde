@@ -120,7 +120,7 @@ String infoString;
 // called in setup()
 // hard-coded, to guarantee consistency across platforms
 void initInfoString(){
-  infoString = "";
+  infoString = " --- SlideySupremeRedux (v1.2.0) ---\n";
   // game info
   infoString += "A 2D sliding puzzle of \"arbitrary\" width and height.\n";
   infoString += "Created with the Processing sketchbook (Java Mode).\n";
@@ -129,7 +129,7 @@ void initInfoString(){
   infoString += "Settings and high scores save across playthroughs.\n";
   infoString += "\n";
   // controls
-  infoString += "KEYBOARD CONTROLS\n";
+  infoString += " --- KEYBOARD CONTROLS ---\n";
   infoString += "W / UP : Move a tile up to fill the empty square.\n";
   infoString += "A / LEFT: Move a tile left to fill the empty square.\n";
   infoString += "S / DOWN: Move a tile down to fill the empty square.\n";
@@ -140,16 +140,18 @@ void initInfoString(){
   infoString += "X : Change the size of the puzzle (enter \"width x height\").\n";
   infoString += "M : Resize the game window.\n";
   infoString += "C : Cycle the game's color scheme.\n";
+  infoString += "Z : Enter/Exit Demo Mode (replay viewer).\n";
   infoString += "ESCAPE : Exit the game.\n";
   infoString += "\n";
   // themes
-  infoString += "COLOR SCHEMES\n";
+  infoString += " --- COLOR SCHEMES ---\n";
   infoString += "DEFAULT : Black and white.\n";
   infoString += "CLASSIC : Brown board. Color of the original version.\n";
   infoString += "CLOUDY : Soft greyscale theme.\n";
   infoString += "MINT : Low intensity greens.\n";
   infoString += "EARTH : Dark brown, green and blue.\n";
   infoString += "MAGMA : Dark and hot colors.\n";
+  infoString += "AUTUMN : Warm Fall greens, yellows and browns.";
 }
 
 // called during INFO state
@@ -164,15 +166,15 @@ void info(){
   rectMode(CENTER);
   // detect aspect ratio
   if(width/(float)height > 1.5){ // 16:9
-    rect(width/4, height/2, 9*width/20, 9*height/10);
+    rect(width/4, height/2, 9*width/20, height - 8);
   } else { // 4:3
-    rect(width/4, height/2, 9*width/20, 27*height/40);
+    rect(width/4, height/2, 9*width/20, 3*height/4);
   }
   // draw text
   fill(activeScheme.nums);
   textSize(width/60);
   textAlign(LEFT, CENTER);
-  text(infoString, width/32, height/2 + 10);
+  text(infoString, width/32, height/2);
   if(info_button.pollButton()){
     info_button.text = "Info";
     tStart = System.currentTimeMillis() - tElapsed;
